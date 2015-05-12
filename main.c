@@ -8,7 +8,19 @@
 #include "boundary.h"
 
 int main(int argc, char *argv[]){
-  /* TODO */
+    double *collideField=NULL;
+    double *streamField=NULL;
+    int *flagField=NULL;
+    int xlength;
+    double tau;
+    double velocityWall[3];
+    int timesteps;
+    int timestepsPerPlotting;
+    
+    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv);
+    // TODO: initialise pointers here!
+    
+    initialiseFields(collideField,streamField,flagField,xlength);
 
 
   return 0;
