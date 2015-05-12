@@ -18,10 +18,26 @@ int main(int argc, char *argv[]){
     int timestepsPerPlotting;
     
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv);
-    // TODO: initialise pointers here!
-    
-    initialiseFields(collideField,streamField,flagField,xlength);
 
+    initialiseFields(collideField, streamField, flagField, xlength);
+
+/*    
+    for(int t = 0; t < timesteps; t++)
+    {
+        double *swap=NULL;
+        doStreaming(collideField,streamField,flagfield,xlength);
+        swap = collideField;
+        collideField = streamField;
+        streamField = swap;
+        doCollision(collideField,flagfield,&tau,xlength);
+        treatBoundary(collideField,flagfield,velocityWall,xlength);
+        
+        if (t%timestepsPerPlotting==0)
+        {
+            writeVtkOutput(collideField,flagfield,argv,t,xlength);
+        }
+    }
+*/
 
   return 0;
 }

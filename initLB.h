@@ -1,6 +1,7 @@
 #ifndef _INITLB_H_
 #define _INITLB_H_
 #include "helper.h"
+#include "LBDefinitions.h"
 
 
 /* reads the parameters for the lid driven cavity scenario from a config file */

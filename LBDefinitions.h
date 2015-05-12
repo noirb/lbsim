@@ -48,8 +48,16 @@
 
   typedef enum { FLUID, NO_SLIP, MOVING_WALL } cell_flag;
 
-  // simplify indexing into our arrays
+
+  /* ---------------------------------------- */
+  /* macros simplify indexing into our arrays */
+  /* ---------------------------------------- */
+
+  // used for collide & stream fields to get a distribution at x,y,z,i
   #define INDEXOF(xlength, x, y, z, i) 19 * (z * xlength * xlength + y * xlength + x) + i
+
+  // used for flag field to get flag at x,y,z
+  #define FINDEXOF(xlength, x, y, z) 19 * (z * xlength * xlength + y * xlength + x)
 
 #endif
 
