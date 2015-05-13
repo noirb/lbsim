@@ -57,7 +57,7 @@
   #define INDEXOF(xlength, x, y, z, i) 19 * (z * xlength * xlength + y * xlength + x) + i
 
   // used for flag field to get flag at x,y,z
-  #define FINDEXOF(xlength, x, y, z) 19 * (z * xlength * xlength + y * xlength + x)
+  #define FINDEXOF(xlength, x, y, z) (z * xlength * xlength + y * xlength + x)
 
 #endif
 

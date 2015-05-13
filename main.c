@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
         streamField = swap;
         doCollision(collideField, flagField, &tau, xlength);
         treatBoundary(collideField,flagField,velocityWall,xlength);
-        
+
         if (t%timestepsPerPlotting==0)
         {
             writeVtkOutput(collideField, flagField, argv[1], t, xlength);

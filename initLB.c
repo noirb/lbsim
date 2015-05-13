@@ -48,7 +48,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                                                 k == xlength - 1 ? MOVING_WALL :        // top layer
                                                 i == 0 || i == xlength - 1 ? NO_SLIP :  // east/west walls
                                                 j == 0 || j == xlength - 1 ? NO_SLIP :  // north/south walls
-                                                FLUID;                                  // interior cells                        
+                                                FLUID;                                  // interior cells
       }
     }
   }
