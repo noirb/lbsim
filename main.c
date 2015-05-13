@@ -16,28 +16,26 @@ int main(int argc, char *argv[]){
     double velocityWall[3];
     int timesteps;
     int timestepsPerPlotting;
-    
+
     readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv);
 
     initialiseFields(collideField, streamField, flagField, xlength);
 
-/*    
     for(int t = 0; t < timesteps; t++)
     {
         double *swap=NULL;
-        doStreaming(collideField,streamField,flagfield,xlength);
+        doStreaming(collideField, streamField, flagField, xlength);
         swap = collideField;
         collideField = streamField;
         streamField = swap;
-        doCollision(collideField,flagfield,&tau,xlength);
-        treatBoundary(collideField,flagfield,velocityWall,xlength);
+        doCollision(collideField, flagField, &tau, xlength);
+        treatBoundary(collideField,flagField,velocityWall,xlength);
         
         if (t%timestepsPerPlotting==0)
         {
-            writeVtkOutput(collideField,flagfield,argv,t,xlength);
+            writeVtkOutput(collideField, flagField, argv[1], t, xlength);
         }
     }
-*/
 
   return 0;
 }
