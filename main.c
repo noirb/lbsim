@@ -17,7 +17,10 @@ int main(int argc, char *argv[]){
     int timesteps;
     int timestepsPerPlotting;
 
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv);
+    if (readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv) == -1)
+    {
+        return 0; // exit if readParameters returned an error
+    }
 
     initialiseFields(collideField, streamField, flagField, xlength);
 
