@@ -28,11 +28,12 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
   fprintf(fp,"CELL_DATA %i \n", (xlength+1)*(xlength+1)*(xlength+1) ); // note: dimensions for cells must be different from points!
   fprintf(fp, "SCALARS density float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(j = 1; j < xlength+2; j++) {
-    for(i = 1; i < xlength+2; i++) {
-      for(k = 1; k < xlength+2; k++) {
+  for(j = 0; j < xlength+2; j++) {
+    for(i = 0; i < xlength+2; i++) {
+      for(k = 0; k < xlength+2; k++) {
         computeDensity(&collideField[INDEXOF(xlength, i,j,k,0)], &densities[FINDEXOF(xlength, i,j,k)]);
-        fprintf(fp, "%f\n", densities[FINDEXOF(xlength, i,j,k)] );
+        if (i > 0 && j > 0 && k > 0)
+            fprintf(fp, "%f\n", densities[FINDEXOF(xlength, i,j,k)] );
       }
     }
   }

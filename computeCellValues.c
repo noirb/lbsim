@@ -31,7 +31,7 @@ void computeFeq(const double * const density, const double * const velocity, dou
         temp = 0;
         for (int j = 0; j < NUMBER_OF_COORDINATES; j++){
             feq[i] += C_S * C_S * LATTICEVELOCITIES[i][j] * velocity[j];
-            feq[i] += C_S * C_S * u_dot_u * 0.5;
+            feq[i] -= C_S * C_S * u_dot_u * 0.5;
             temp += LATTICEVELOCITIES[i][j] * velocity[j];
         }
         feq[i] += temp * temp * 0.5;

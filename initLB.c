@@ -21,24 +21,24 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
 
         /* Initialize Arrays */
-  for (int i = 0; i < xlength; i++)
+  for (int i = 0; i < xlength+2; i++)
   {
-    for (int j = 0; j < xlength; j++)
+    for (int j = 0; j < xlength+2; j++)
     {
-      for (int k = 0; k < xlength; k++)
+      for (int k = 0; k < xlength+2; k++)
       {
         // set distributions at (i,j,k)
-        for (int l = 0; l < xlength; l++)
+        for (int l = 0; l < xlength+2; l++)
         {
             collideField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
             streamField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
         }
 
         // set flags at (i,j,k)
-        flagField[FINDEXOF(xlength, i, j, k)] = k == 0 ? NO_SLIP :                      // bottom layer
-                                                k == xlength - 1 ? MOVING_WALL :        // top layer
-                                                i == 0 || i == xlength - 1 ? NO_SLIP :  // east/west walls
-                                                j == 0 || j == xlength - 1 ? NO_SLIP :  // north/south walls
+        flagField[FINDEXOF(xlength, i, j, k)] = j == 0 ? NO_SLIP :                      // bottom layer (min Y)
+                                                j == xlength + 1 ? MOVING_WALL :        // top layer (max Y)
+                                                i == 0 || i == xlength + 1 ? NO_SLIP :  // east/west walls
+                                                k == 0 || k == xlength + 1 ? NO_SLIP :  // north/south walls
                                                 FLUID;                                  // interior cells
       }
     }
