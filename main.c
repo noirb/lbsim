@@ -8,8 +8,39 @@
 #include "boundary.h"
 
 int main(int argc, char *argv[]){
-  /* TODO */
+    /*
+        1. Check for negative densities.
+        2. Check for high densities.
+        assert.h -> assert(<condition>); // Zero: crashes.
+    */
+    double *collideField=NULL;
+    double *streamField=NULL;
+    int *flagField=NULL;
+    int xlength;
+    double tau;
+    double velocityWall[3];
+    int timesteps;
+    int timestepsPerPlotting;
 
+    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv);
+
+    initialiseFields(collideField, streamField, flagField, xlength);
+
+    for(int t = 0; t < timesteps; t++)
+    {
+        double *swap=NULL;
+        doStreaming(collideField, streamField, flagField, xlength);
+        swap = collideField;
+        collideField = streamField;
+        streamField = swap;
+        doCollision(collideField, flagField, &tau, xlength);
+        treatBoundary(collideField,flagField,velocityWall,xlength);
+
+        if (t%timestepsPerPlotting==0)
+        {
+            writeVtkOutput(collideField, flagField, argv[1], t, xlength);
+        }
+    }
 
   return 0;
 }
