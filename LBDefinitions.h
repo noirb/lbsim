@@ -1,12 +1,9 @@
 #ifndef _LBDEFINITIONS_H_
 #define _LBDEFINITIONS_H_
 
-<<<<<<< HEAD
 #define NUMBER_OF_LATTICE_DIRECTIONS 19
 #define NUMBER_OF_COORDINATES 3
 
-=======
->>>>>>> 6945c0893aa11e4a2a6c4a26b6cabd61d23f01cb
   static const int LATTICEVELOCITIES[19][3] = {
                     { 0, -1, -1},
                     {-1,  0, -1},
@@ -50,11 +47,8 @@
                      1.0 / 36.0,
                      1.0 / 36.0
   };
-<<<<<<< HEAD
-  static const double C_S = 0.577350269; // 1 / sqrt(3.0);
-=======
+
   static const double C_S = 1.0 / 1.73205080757; // 1 / sqrt(3.0);
->>>>>>> 6945c0893aa11e4a2a6c4a26b6cabd61d23f01cb
 
   typedef enum { FLUID, NO_SLIP, MOVING_WALL } cell_flag;
 

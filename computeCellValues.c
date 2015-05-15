@@ -2,7 +2,6 @@
 #include "LBDefinitions.h"
 
 void computeDensity(const double *const currentCell, double *density){
-<<<<<<< HEAD
     *density = 0;
     for (int i = 0; i < NUMBER_OF_LATTICE_DIRECTIONS; i++){
         *density += *(currentCell + i);
@@ -12,20 +11,11 @@ void computeDensity(const double *const currentCell, double *density){
 void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
     for (int j = 0; j < NUMBER_OF_COORDINATES; j++){
         velocity[j] = 0;
-        for( int i = 0; i < NUMBER_OF_LATTICE_DIRECTION; i++){
+        for( int i = 0; i < NUMBER_OF_LATTICE_DIRECTIONS; i++){
             velocity[j] += *(currentCell+i) * LATTICEVELOCITIES[i][j];
         }
         velocity[j] /= *density;
     }
-=======
-  /* TODO */
-  *density = 0;
-}
-
-void computeVelocity(const double * const currentCell, const double * const density, double *velocity){
-  /* TODO */
-  *velocity = 0;
->>>>>>> 6945c0893aa11e4a2a6c4a26b6cabd61d23f01cb
 }
 
 void computeFeq(const double * const density, const double * const velocity, double *feq){

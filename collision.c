@@ -2,7 +2,7 @@
 #include "LBDefinitions.h"
 
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
-    for( int i = 0; i < NUMBER_OF_LATTICE_DIRECTION; i++){
+    for( int i = 0; i < NUMBER_OF_LATTICE_DIRECTIONS; i++){
         *(currentCell+i) -= (1/(*tau)) * (*(currentCell+i) - *feq);
     }
 }
@@ -16,9 +16,9 @@ void doCollision(double *collideField, int *flagField, const double * const tau,
         for (int j = 1; j <= xlength; j++){
             for (int k = 1; k <= xlength; k++){
                 computeDensity(&(collideField[INDEXOF(xlength, i, j, k, 0)]), &density);
-                computeVelocity(&(collideField[INDEXOF(xlength, i, j, k, 0)]), &density, &velocity);
-                computeFeq(&density, &velocity, &feq);
-                computePostCollisionDistributions(&(collideField[INDEXOF(xlength, i, j, k, 0)]), tau, &feq);
+                computeVelocity(&(collideField[INDEXOF(xlength, i, j, k, 0)]), &density, velocity);
+                computeFeq(&density, velocity, feq);
+                computePostCollisionDistributions(&(collideField[INDEXOF(xlength, i, j, k, 0)]), tau, feq);
             }
         }
     }

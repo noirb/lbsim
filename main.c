@@ -8,14 +8,6 @@
 #include "boundary.h"
 
 int main(int argc, char *argv[]){
-<<<<<<< HEAD
-    /*
-        1. Check for negative densities.
-        2. Check for high densities.
-        assert.h -> assert(<condition>); // Zero: crashes.
-    */
-=======
->>>>>>> 6945c0893aa11e4a2a6c4a26b6cabd61d23f01cb
     double *collideField=NULL;
     double *streamField=NULL;
     int *flagField=NULL;
@@ -25,10 +17,6 @@ int main(int argc, char *argv[]){
     int timesteps;
     int timestepsPerPlotting;
 
-<<<<<<< HEAD
-    readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv);
-
-=======
     if (readParameters(&xlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, argc, argv) == -1)
     {
         return 0; // exit if readParameters returned an error
@@ -40,7 +28,7 @@ int main(int argc, char *argv[]){
     streamField  = (double*) malloc(sizeof(double) * 19 * pow(xlength+2, 3));
       // flagField contains (xlength + 2) ^ D cells
     flagField = (int*) malloc(sizeof(int) * pow(xlength+2, 3));
->>>>>>> 6945c0893aa11e4a2a6c4a26b6cabd61d23f01cb
+
     initialiseFields(collideField, streamField, flagField, xlength);
 
     for(int t = 0; t < timesteps; t++)
@@ -58,14 +46,11 @@ int main(int argc, char *argv[]){
             writeVtkOutput(collideField, flagField, argv[1], t, xlength);
         }
     }
-<<<<<<< HEAD
-=======
 
   // cleanup
   free(collideField);
   free(streamField);
   free(flagField);
->>>>>>> 6945c0893aa11e4a2a6c4a26b6cabd61d23f01cb
 
   return 0;
 }
