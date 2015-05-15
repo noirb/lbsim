@@ -28,17 +28,17 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
       for (int k = 0; k < xlength+2; k++)
       {
         // set distributions at (i,j,k)
-        for (int l = 0; l < xlength+2; l++)
+        for (int l = 0; l < NUMBER_OF_LATTICE_DIRECTIONS; l++)
         {
             collideField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
             streamField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
         }
 
         // set flags at (i,j,k)
-        flagField[FINDEXOF(xlength, i, j, k)] = j == 0 ? NO_SLIP :                      // bottom layer (min Y)
-                                                j == xlength + 1 ? MOVING_WALL :        // top layer (max Y)
+        flagField[FINDEXOF(xlength, i, j, k)] = k == 0 ? NO_SLIP :                      // bottom layer (min Y)
+                                                k == xlength + 1 ? MOVING_WALL :        // top layer (max Y)
                                                 i == 0 || i == xlength + 1 ? NO_SLIP :  // east/west walls
-                                                k == 0 || k == xlength + 1 ? NO_SLIP :  // north/south walls
+                                                j == 0 || j == xlength + 1 ? NO_SLIP :  // north/south walls
                                                 FLUID;                                  // interior cells
       }
     }
