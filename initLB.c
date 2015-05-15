@@ -19,16 +19,8 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
 
 
 void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength){
-        /* Allocate space for our data */
 
-  // collideField & streamField each have Q * (xlength + 2) ^ D cells
-  //                    Q == 19, D == 3
-  collideField = (double*) malloc(sizeof(double) * 19 * pow(xlength+2, 3));
-  streamField  = (double*) malloc(sizeof(double) * 19 * pow(xlength+2, 3));
-  
-  // flagField contains (xlength + 2) ^ D cells
   flagField = (int*) malloc(sizeof(int) * pow(xlength+2, 3));
-  
         /* Initialize Arrays */
   for (int i = 0; i < xlength; i++)
   {
