@@ -40,6 +40,11 @@ int main(int argc, char *argv[]){
         }
     }
 
+  // cleanup
+  free(collideField);
+  free(streamField);
+  free(flagField);
+
   return 0;
 }
 
