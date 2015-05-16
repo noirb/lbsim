@@ -78,7 +78,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                     for(l = 0; l<N; l++)
                     {
-                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], LATTICEVELOCITIES[oyz[l]][2], 0);
+                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyo[l]][0], j+LATTICEVELOCITIES[xyo[l]][1], LATTICEVELOCITIES[xyo[l]][2], 0);
                         computeDensity(collideField+ind, &den);
                         collideField[INDEXOF(xlength,i, j, 0, xyo[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyo[l]][0], j+LATTICEVELOCITIES[xyo[l]][1], LATTICEVELOCITIES[xyo[l]][2], 18-xyo[l])] + 2*LATTICEWEIGHTS[xyo[l]]*den*(LATTICEVELOCITIES[xyo[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xyo[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xyo[l]][2]*wallVelocity[2])/(C_S*C_S);
                     }
@@ -96,7 +96,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     for (l = 0; l<N; l++)
                     {
-                        collideField[INDEXOF(xlength,i, j, 0, xyn[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], LATTICEVELOCITIES[xyn[l]][2], 18-xyn[l])];
+                        collideField[INDEXOF(xlength,i, j, xlength+1, xyn[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], xlength+1+LATTICEVELOCITIES[xyn[l]][2], 18-xyn[l])];
                     }
                 }
 
@@ -104,9 +104,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     for(l = 0; l<N; l++)
                     {
-                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], LATTICEVELOCITIES[xyn[l]][2], 0);
+                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], xlength+1+LATTICEVELOCITIES[xyn[l]][2], 0);
                         computeDensity(collideField+ind, &den);
-                        collideField[INDEXOF(xlength,i, j, 0, xyn[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], LATTICEVELOCITIES[xyn[l]][2], 18-xyn[l])] + 2*LATTICEWEIGHTS[xyn[l]]*den*(LATTICEVELOCITIES[xyn[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xyn[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xyn[l]][2]*wallVelocity[2])/(C_S*C_S);
+                        collideField[INDEXOF(xlength,i, j, xlength+1, xyn[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], xlength+1+LATTICEVELOCITIES[xyn[l]][2], 18-xyn[l])] + 2*LATTICEWEIGHTS[xyn[l]]*den*(LATTICEVELOCITIES[xyn[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xyn[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xyn[l]][2]*wallVelocity[2])/(C_S*C_S);
                     }
                 }
             }
@@ -130,7 +130,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     for (l = 0; l<N; l++)
                     {
-                        collideField[INDEXOF(xlength,i, j, 0, oyz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], LATTICEVELOCITIES[oyz[l]][2], 18-oyz[l])];
+                        collideField[INDEXOF(xlength,0, j, k, oyz[l])] = collideField[INDEXOF(xlength, LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], k+LATTICEVELOCITIES[oyz[l]][2], 18-oyz[l])];
                     }
                 }
 
@@ -139,9 +139,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                     for(l = 0; l<N; l++)
                     {
-                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], LATTICEVELOCITIES[oyz[l]][2], 0);
+                        ind = INDEXOF(xlength, LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], k+LATTICEVELOCITIES[oyz[l]][2], 0);
                         computeDensity(collideField+ind, &den);
-                        collideField[INDEXOF(xlength,i, j, 0, oyz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], LATTICEVELOCITIES[oyz[l]][2], 18-oyz[l])] + 2*LATTICEWEIGHTS[oyz[l]]*den*(LATTICEVELOCITIES[oyz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[oyz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[oyz[l]][2]*wallVelocity[2])/(C_S*C_S);
+                        collideField[INDEXOF(xlength,0, j, k, oyz[l])] = collideField[INDEXOF(xlength, LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], k+LATTICEVELOCITIES[oyz[l]][2], 18-oyz[l])] + 2*LATTICEWEIGHTS[oyz[l]]*den*(LATTICEVELOCITIES[oyz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[oyz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[oyz[l]][2]*wallVelocity[2])/(C_S*C_S);
                     }
                 }
             }
@@ -158,7 +158,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     for (l = 0; l<N; l++)
                     {
-                        collideField[INDEXOF(xlength,i, j, 0, nyz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], LATTICEVELOCITIES[nyz[l]][2], 18-nyz[l])];
+                        collideField[INDEXOF(xlength,xlength+1, j, k, nyz[l])] = collideField[INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], k+LATTICEVELOCITIES[nyz[l]][2], 18-nyz[l])];
                     }
                 }
                 if (flag == MOVING_WALL) //update directions 1, 5, 8, 11, 15
@@ -166,9 +166,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                     for(l = 0; l<N; l++)
                     {
-                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], LATTICEVELOCITIES[nyz[l]][2], 0);
+                        ind = INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], k+LATTICEVELOCITIES[nyz[l]][2], 0);
                         computeDensity(collideField+ind, &den);
-                        collideField[INDEXOF(xlength,i, j, 0, nyz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], LATTICEVELOCITIES[nyz[l]][2], 18-nyz[l])] + 2*LATTICEWEIGHTS[nyz[l]]*den*(LATTICEVELOCITIES[nyz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[nyz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[nyz[l]][2]*wallVelocity[2])/(C_S*C_S);
+                        collideField[INDEXOF(xlength,xlength+1, j, k, nyz[l])] = collideField[INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], k+LATTICEVELOCITIES[nyz[l]][2], 18-nyz[l])] + 2*LATTICEWEIGHTS[nyz[l]]*den*(LATTICEVELOCITIES[nyz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[nyz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[nyz[l]][2]*wallVelocity[2])/(C_S*C_S);
                     }
                 }
             }
@@ -192,7 +192,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     for (l = 0; l<N; l++)
                     {
-                        collideField[INDEXOF(xlength,i, j, 0, xoz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], j+LATTICEVELOCITIES[xoz[l]][1], LATTICEVELOCITIES[xoz[l]][2], 18-xoz[l])];
+                        collideField[INDEXOF(xlength,i, 0, k, xoz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], LATTICEVELOCITIES[xoz[l]][1], k+LATTICEVELOCITIES[xoz[l]][2], 18-xoz[l])];
                     }
                 }
 
@@ -201,9 +201,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                     for(l = 0; l<N; l++)
                     {
-                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], j+LATTICEVELOCITIES[xoz[l]][1], LATTICEVELOCITIES[xoz[l]][2], 0);
+                        ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], LATTICEVELOCITIES[xoz[l]][1], k+LATTICEVELOCITIES[xoz[l]][2], 0);
                         computeDensity(collideField+ind, &den);
-                        collideField[INDEXOF(xlength,i, j, 0, xoz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], j+LATTICEVELOCITIES[xoz[l]][1], LATTICEVELOCITIES[xoz[l]][2], 18-xoz[l])] + 2*LATTICEWEIGHTS[xoz[l]]*den*(LATTICEVELOCITIES[xoz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xoz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xoz[l]][2]*wallVelocity[2])/(C_S*C_S);
+                        collideField[INDEXOF(xlength,i, 0, k, xoz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], LATTICEVELOCITIES[xoz[l]][1], k+LATTICEVELOCITIES[xoz[l]][2], 18-xoz[l])] + 2*LATTICEWEIGHTS[xoz[l]]*den*(LATTICEVELOCITIES[xoz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xoz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xoz[l]][2]*wallVelocity[2])/(C_S*C_S);
                     }
                 }
             }
@@ -220,7 +220,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                     {
                         for (l = 0; l<N; l++)
                         {
-                            collideField[INDEXOF(xlength,i, j, 0, xnz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], j+LATTICEVELOCITIES[xnz[l]][1], LATTICEVELOCITIES[xnz[l]][2], 18-xnz[l])];
+                            collideField[INDEXOF(xlength,i, xlength+1, k, xnz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 18-xnz[l])];
                         }
                     }
 
@@ -228,9 +228,9 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                     {
                         for(l = 0; l<N; l++)
                         {
-                            ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], j+LATTICEVELOCITIES[xnz[l]][1], LATTICEVELOCITIES[xnz[l]][2], 0);
+                            ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 0);
                             computeDensity(collideField+ind, &den);
-                            collideField[INDEXOF(xlength,i, j, 0, xnz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], j+LATTICEVELOCITIES[xnz[l]][1], LATTICEVELOCITIES[xnz[l]][2], 18-xnz[l])] + 2*LATTICEWEIGHTS[xnz[l]]*den*(LATTICEVELOCITIES[xnz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xnz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xnz[l]][2]*wallVelocity[2])/(C_S*C_S);
+                            collideField[INDEXOF(xlength,i, xlength+1, k, xnz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 18-xnz[l])] + 2*LATTICEWEIGHTS[xnz[l]]*den*(LATTICEVELOCITIES[xnz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xnz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xnz[l]][2]*wallVelocity[2])/(C_S*C_S);
                         }
                     }
                 }
@@ -278,7 +278,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
             if (flag == MOVING_WALL)
             {
-                ind = INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], LATTICEVELOCITIES[4][2], 0);
+                ind = INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1+LATTICEVELOCITIES[4][2], 0);
                 computeDensity(collideField+ind, &den);
                 collideField[INDEXOF(xlength,i, j, 0, 4)] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1+LATTICEVELOCITIES[4][2], 14)] + 2*LATTICEWEIGHTS[4]*den*(LATTICEVELOCITIES[4][0]*wallVelocity[0]+LATTICEVELOCITIES[4][1]*wallVelocity[1]+LATTICEVELOCITIES[4][2]*wallVelocity[2])/(C_S*C_S);
             }
@@ -324,7 +324,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
             }
         }
     }
-    
+
 
     //Y-edges
     for(j = 1; j<=xlength; j++)
@@ -455,7 +455,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(0, xlength+1, k)
-        flag = flagField[FINDEXOF(xlength, 0, j, xlength+1)];
+        flag = flagField[FINDEXOF(xlength, 0, xlength+1, k)];
         if (flag == FLUID)
         {
             //break;
@@ -484,16 +484,16 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             if (flag == NO_SLIP) //update 5
             {
-                collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = collideField[INDEXOF(xlength, xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 11)];
+                collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = collideField[INDEXOF(xlength, xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 13)];
             }
             if (flag == MOVING_WALL)
             {
                 ind = INDEXOF(xlength, xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 0);
                 computeDensity(collideField+ind, &den);
-                collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = collideField[INDEXOF(xlength, xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 11)] + 2*LATTICEWEIGHTS[5]*den*(LATTICEVELOCITIES[5][0]*wallVelocity[0]+LATTICEVELOCITIES[5][1]*wallVelocity[1]+LATTICEVELOCITIES[5][2]*wallVelocity[2])/(C_S*C_S);
+                collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = collideField[INDEXOF(xlength, xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 13)] + 2*LATTICEWEIGHTS[5]*den*(LATTICEVELOCITIES[5][0]*wallVelocity[0]+LATTICEVELOCITIES[5][1]*wallVelocity[1]+LATTICEVELOCITIES[5][2]*wallVelocity[2])/(C_S*C_S);
             }
         }
     }
-    
+
 }
 
