@@ -25,6 +25,18 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
   write_vtkPointCoordinates(fp, xlength, 1, 1, 1);
 
   fprintf(fp,"\n");
+  fprintf(fp,"POINT_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2) );
+  fprintf(fp, "SCALARS flag float 1 \n"); 
+  fprintf(fp, "LOOKUP_TABLE default \n");
+  for(i = 0; i < xlength+2; i++) {
+    for(j = 0; j < xlength+2; j++) {
+      for(k = 0; k < xlength+2; k++) {
+        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(xlength, i,j,k)]);
+      }
+    }
+  }
+
+  fprintf(fp,"\n");
   fprintf(fp,"CELL_DATA %i \n", (xlength+1)*(xlength+1)*(xlength+1) ); // note: dimensions for cells must be different from points!
   fprintf(fp, "SCALARS density float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
