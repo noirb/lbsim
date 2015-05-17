@@ -1,9 +1,10 @@
 #include "collision.h"
+#include <stdio.h>
 
 
 void computePostCollisionDistributions(double *currentCell, const double * const tau, const double *const feq){
     for( int i = 0; i < NUMBER_OF_LATTICE_DIRECTIONS; i++){
-        *(currentCell+i) -= (1.0/(*tau)) * (*(currentCell+i) - *(feq+i));
+        *(currentCell+i) = *(currentCell+i) - (1.0/(*tau)) * (*(currentCell+i) - *(feq+i));
     }
 }
 
