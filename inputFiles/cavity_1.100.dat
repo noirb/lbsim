@@ -1,6 +1,6 @@
 xlength		25
 
-tau         0.5
+tau         1.5
 
 velocityWallX 1
 velocityWallY 0
