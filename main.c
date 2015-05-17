@@ -22,6 +22,10 @@ int main(int argc, char *argv[]){
         return 0; // exit if readParameters returned an error
     }
 
+    velocityWall[0] = 1.0;
+    velocityWall[1] = 0.0;
+    velocityWall[2] = 0.0;
+
     // collideField & streamField each have Q * (xlength + 2) ^ D cells
     //                    Q == 19, D == 3
     collideField = (double*) malloc(sizeof(double) * 19 * pow(xlength+2, 3));

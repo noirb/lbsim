@@ -1,5 +1,4 @@
 #include "streaming.h"
-#include "LBDefinitions.h"
 
 void doStreaming(double *collideField, double *streamField,int *flagField,int xlength){
 int flag;

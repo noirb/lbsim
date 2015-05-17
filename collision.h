@@ -2,6 +2,7 @@
 #define _COLLISION_H_
 
 #include "computeCellValues.h"
+#include "LBDefinitions.h"
 
 /** computes the post-collision distribution functions according to the BGK update rule and
  *  stores the results again at the same position.

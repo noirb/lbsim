@@ -1,5 +1,6 @@
 #ifndef _COMPUTECELLVALUES_H_
 #define _COMPUTECELLVALUES_H_
+#include "LBDefinitions.h"
 
 /** computes the density from the particle distribution functions stored at currentCell.
  *  currentCell thus denotes the address of the first particle distribution function of the

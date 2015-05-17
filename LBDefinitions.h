@@ -58,10 +58,11 @@
   /* ---------------------------------------- */
 
   // used for collide & stream fields to get a distribution at x,y,z,i
-  #define INDEXOF(xlength, x, y, z, i) 19 * (z * xlength * xlength + y * xlength + x) + i
+  #define INDEXOF(xlength, x, y, z, i) (19 * ((z) * (xlength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
+  //int INDEXOF(int xlength, int x, int y, int z, int i);
 
   // used for flag field to get flag at x,y,z
-  #define FINDEXOF(xlength, x, y, z) (z * xlength * xlength + y * xlength + x)
-
+  #define FINDEXOF(xlength, x, y, z) ((z) * (xlength+2) * (xlength+2) + (y) * (xlength+2) + (x))
+  //int FINDEXOF(int xlength, int x, int y, int z);
 #endif
 

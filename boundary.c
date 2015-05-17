@@ -1,6 +1,7 @@
 #include "boundary.h"
-#include "LBDefinitions.h"
-#include "computeCellValues.h"
+//#include "LBDefinitions.h"
+//#include "computeCellValues.h"
+#include <stdio.h>
 
 void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
   //loop over the boundaries
@@ -13,7 +14,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     const int xyo[5] = {14, 15, 16, 17, 18};
     const int xyn[5] = {0, 1 ,2, 3, 4};
     const int xoz[5] = {4, 11, 12, 13, 18};
-    const int xnz[5] = {0, 5, 7, 6, 14};
+    const int xnz[5] = {0, 5, 6, 7, 14};
     const int oyz[5] = {3, 7, 10, 13, 17};
     const int nyz[5] = {1, 5, 8, 11, 15};
 
@@ -25,10 +26,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
             for(k = 1; k<=xlength; k++)
             {
                 flag = flagField[FINDEXOF(xlength, i, j, k)];
-                if (flag == FLUID)
-                {
-                    //break;
-                }
+                if (flag == FLUID){}
                 else {
                     if (flag == NO_SLIP)
                     {
@@ -39,7 +37,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                     }
                     if (flag == MOVING_WALL)
                     {
-
+                        //printf(" M,%d",FINDEXOF(xlength, i, j, k));
                         for (l = 0; l<19; l++)
                         {
                             ind = INDEXOF(xlength, i + LATTICEVELOCITIES[l][0], j+LATTICEVELOCITIES[l][1], k+LATTICEVELOCITIES[l][2], 0);
@@ -59,14 +57,11 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         for (j=1; j<= xlength; j++)
         {
             flag = flagField[FINDEXOF(xlength, i, j, 0)];
-            if (flag == FLUID)
-            {
-                //break;
-            }
+            if (flag == FLUID){}
             else
             {
                 if (flag == NO_SLIP) //update 14, 15, 16, 17, 18
-                {
+                {   //printf("   NS_XY0");
                     for (l = 0; l<N; l++)
                     {
                         collideField[INDEXOF(xlength,i, j, 0, xyo[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyo[l]][0], j+LATTICEVELOCITIES[xyo[l]][1], LATTICEVELOCITIES[xyo[l]][2], 18-xyo[l])];
@@ -75,7 +70,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                 if (flag == MOVING_WALL)
                 {
-
+                    //printf("   MV_XY0");
                     for(l = 0; l<N; l++)
                     {
                         ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyo[l]][0], j+LATTICEVELOCITIES[xyo[l]][1], LATTICEVELOCITIES[xyo[l]][2], 0);
@@ -94,6 +89,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
             {
                 if (flag == NO_SLIP) //update 0, 1, 2, 3, 4
                 {
+                    //printf("   NS_XYN");
                     for (l = 0; l<N; l++)
                     {
                         collideField[INDEXOF(xlength,i, j, xlength+1, xyn[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], xlength+1+LATTICEVELOCITIES[xyn[l]][2], 18-xyn[l])];
@@ -102,6 +98,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                 if (flag == MOVING_WALL)
                 {
+                    //printf("   MV_XYN");
                     for(l = 0; l<N; l++)
                     {
                         ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j+LATTICEVELOCITIES[xyn[l]][1], xlength+1+LATTICEVELOCITIES[xyn[l]][2], 0);
@@ -136,7 +133,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                 if (flag == MOVING_WALL) //update directions 3, 7, 10, 13, 17
                 {
-
+                    //printf("   MV_0YZ");
                     for(l = 0; l<N; l++)
                     {
                         ind = INDEXOF(xlength, LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], k+LATTICEVELOCITIES[oyz[l]][2], 0);
@@ -163,7 +160,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 }
                 if (flag == MOVING_WALL) //update directions 1, 5, 8, 11, 15
                 {
-
+                    //printf("   MV_NYZ");
                     for(l = 0; l<N; l++)
                     {
                         ind = INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], k+LATTICEVELOCITIES[nyz[l]][2], 0);
@@ -198,7 +195,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                 if (flag == MOVING_WALL) //update directions 4, 11, 12, 13, 18
                 {
-
+                    //printf("   MV_X0Z");
                     for(l = 0; l<N; l++)
                     {
                         ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xoz[l]][0], LATTICEVELOCITIES[xoz[l]][1], k+LATTICEVELOCITIES[xoz[l]][2], 0);
@@ -218,6 +215,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     if (flag == NO_SLIP) //update 0, 5, 7, 6, 14
                     {
+                        //printf("   NS_XNZ");
                         for (l = 0; l<N; l++)
                         {
                             collideField[INDEXOF(xlength,i, xlength+1, k, xnz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 18-xnz[l])];
@@ -226,9 +224,10 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
                     if (flag == MOVING_WALL) //update directions 0, 5, 7, 6, 14
                     {
+                        printf("   MV_XNZ");
                         for(l = 0; l<N; l++)
                         {
-                            ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 0);
+                            ind = INDEXOF(xlength, i+LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 0);
                             computeDensity(collideField+ind, &den);
                             collideField[INDEXOF(xlength,i, xlength+1, k, xnz[l])] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1+LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 18-xnz[l])] + 2*LATTICEWEIGHTS[xnz[l]]*den*(LATTICEVELOCITIES[xnz[l]][0]*wallVelocity[0]+LATTICEVELOCITIES[xnz[l]][1]*wallVelocity[1]+LATTICEVELOCITIES[xnz[l]][2]*wallVelocity[2])/(C_S*C_S);
                         }
@@ -280,7 +279,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
             {
                 ind = INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1+LATTICEVELOCITIES[4][2], 0);
                 computeDensity(collideField+ind, &den);
-                collideField[INDEXOF(xlength,i, j, 0, 4)] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1+LATTICEVELOCITIES[4][2], 14)] + 2*LATTICEWEIGHTS[4]*den*(LATTICEVELOCITIES[4][0]*wallVelocity[0]+LATTICEVELOCITIES[4][1]*wallVelocity[1]+LATTICEVELOCITIES[4][2]*wallVelocity[2])/(C_S*C_S);
+                collideField[INDEXOF(xlength,i, 0, xlength+1, 4)] = collideField[INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1+LATTICEVELOCITIES[4][2], 14)] + 2*LATTICEWEIGHTS[4]*den*(LATTICEVELOCITIES[4][0]*wallVelocity[0]+LATTICEVELOCITIES[4][1]*wallVelocity[1]+LATTICEVELOCITIES[4][2]*wallVelocity[2])/(C_S*C_S);
             }
         }
 
@@ -435,7 +434,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(xlength+1, 0, k)
-        flag = flagField[FINDEXOF(xlength, xlength+1, j, 0)];
+        flag = flagField[FINDEXOF(xlength, xlength+1, 0, k)];
         if (flag == FLUID)
         {
             //break;
@@ -496,4 +495,3 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     }
 
 }
-

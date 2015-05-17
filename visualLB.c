@@ -1,6 +1,5 @@
 #include "helper.h"
 #include "visualLB.h"
-#include "LBDefinitions.h"
 #include "computeCellValues.h"
 
 void writeVtkOutput(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, int xlength) {
@@ -34,6 +33,18 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
         computeDensity(&collideField[INDEXOF(xlength, i,j,k,0)], &densities[FINDEXOF(xlength, i,j,k)]);
         if (i > 0 && j > 0 && k > 0)
             fprintf(fp, "%f\n", densities[FINDEXOF(xlength, i,j,k)] );
+      }
+    }
+  }
+
+  fprintf(fp, "SCALARS id int 1 \n");
+  fprintf(fp, "LOOKUP_TABLE default \n");
+  for(j = 0; j < xlength+2; j++) {
+    for(i = 0; i < xlength+2; i++) {
+      for(k = 0; k < xlength+2; k++) {
+//        computeDensity(&collideField[INDEXOF(xlength, i,j,k,0)], &densities[FINDEXOF(xlength, i,j,k)]);
+        if (i > 0 && j > 0 && k > 0)
+            fprintf(fp, "%d\n", flagField[FINDEXOF(xlength, i,j,k)] );
       }
     }
   }
