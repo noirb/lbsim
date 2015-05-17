@@ -18,11 +18,8 @@ void computeVelocity(const double * const currentCell, const double * const dens
 }
 
 void computeFeq(const double * const density, const double * const velocity, double *feq){
-    double temp, u_dot_u = 0;
-
-    for (int j = 0; j < NUMBER_OF_COORDINATES; j++){
-        u_dot_u += velocity[j] * velocity[j];   // Precalculate u.u to save time
-    }
+    double u_dot_u = dot(velocity, velocity);
+    double temp = 0;
 
     for (int i = 0; i < NUMBER_OF_LATTICE_DIRECTIONS; i++){
         feq[i] = 0;
@@ -38,3 +35,24 @@ void computeFeq(const double * const density, const double * const velocity, dou
     }
 }
 
+double dot(const double * const v1, const double * const v2)
+{
+    double result = 0;
+    for (int i = 0; i < NUMBER_OF_COORDINATES; i++)
+    {
+        result += v1[i] * v2[i];
+    }
+
+    return result;
+}
+
+double dot2(const int * const v1, const double * const v2)
+{
+    double result = 0;
+    for (int i = 0; i < NUMBER_OF_COORDINATES; i++)
+    {
+        result += (double)(v1[i]) * v2[i];
+    }
+
+    return result;
+}
