@@ -7,12 +7,19 @@ int readParameters(int *xlength, double *tau, double *velocityWall, int *timeste
     return -1;
   }
 
+  double velocityWallX, velocityWallY, velocityWallZ;
+
   READ_INT(argv[1],     *xlength);
   READ_DOUBLE(argv[1],  *tau);
-  READ_DOUBLE(argv[1],  *velocityWall);
+  READ_DOUBLE(argv[1],  velocityWallX);
+  READ_DOUBLE(argv[1],  velocityWallY);
+  READ_DOUBLE(argv[1],  velocityWallZ);
   READ_INT(argv[1],     *timesteps);
   READ_INT(argv[1],     *timestepsPerPlotting);
-  
+
+  velocityWall[0] = velocityWallX;
+  velocityWall[1] = velocityWallY;
+  velocityWall[2] = velocityWallZ;
 
   return 0;
 }
