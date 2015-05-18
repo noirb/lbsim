@@ -25,12 +25,12 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
   write_vtkPointCoordinates(fp, xlength, 1, 1, 1);
 
   fprintf(fp,"\n");
-  fprintf(fp,"POINT_DATA %i \n", (xlength+2)*(xlength+2)*(xlength+2) );
+  fprintf(fp,"POINT_DATA %i \n", (xlength)*(xlength)*(xlength) );
   fprintf(fp, "SCALARS density float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(i = 0; i < xlength+2; i++) {
-    for(j = 0; j < xlength+2; j++) {
-      for(k = 0; k < xlength+2; k++) {
+  for(i = 1; i < xlength+1; i++) {
+    for(j = 1; j < xlength+1; j++) {
+      for(k = 1; k < xlength+1; k++) {
         computeDensity(&collideField[INDEXOF(xlength, i,j,k,0)], &densities[FINDEXOF(xlength, i,j,k)]);
         fprintf(fp, "%f\n", densities[FINDEXOF(xlength, i,j,k)] );
       }
@@ -40,9 +40,9 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
   fprintf(fp, "\n");
   fprintf(fp, "SCALARS flag float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(i = 0; i < xlength+2; i++) {
-    for(j = 0; j < xlength+2; j++) {
-      for(k = 0; k < xlength+2; k++) {
+  for(i = 1; i < xlength+1; i++) {
+    for(j = 1; j < xlength+1; j++) {
+      for(k = 1; k < xlength+1; k++) {
         fprintf(fp, "%f\n", (double)flagField[FINDEXOF(xlength, i,j,k)]);
       }
     }
@@ -50,11 +50,11 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
 
   fprintf(fp,"\n");
   fprintf(fp, "VECTORS velocity float\n");
-  for(i = 0; i < xlength+2; i++) {
-    for(j = 0; j < xlength+2; j++) {
-      for(k = 0; k < xlength+2; k++) {
+  for(i = 1; i < xlength+1; i++) {
+    for(j = 1; j < xlength+1; j++) {
+      for(k = 1; k < xlength+1; k++) {
         double velocity[3];
-        computeVelocity(&collideField[INDEXOF(xlength, i,j,k,0)], densities, velocity);
+        computeVelocity(&collideField[INDEXOF(xlength, i,j,k,0)], densities+FINDEXOF(xlength, i, j, k), velocity);
         fprintf(fp, "%f %f %f\n", velocity[0], velocity[1], velocity[2]);
       }
     }
@@ -86,8 +86,8 @@ void write_vtkHeader( FILE *fp, int xlength)
   fprintf(fp,"ASCII\n");
   fprintf(fp,"\n");	
   fprintf(fp,"DATASET STRUCTURED_GRID\n");
-  fprintf(fp,"DIMENSIONS  %i %i %i\n", xlength+2, xlength+2, xlength+2);
-  fprintf(fp,"POINTS %i float\n", (xlength+2)*(xlength+2)*(xlength+2) );
+  fprintf(fp,"DIMENSIONS  %i %i %i\n", xlength, xlength, xlength);
+  fprintf(fp,"POINTS %i float\n", (xlength)*(xlength)*(xlength) );
   fprintf(fp,"\n");
 }
 
@@ -102,9 +102,9 @@ void write_vtkPointCoordinates( FILE *fp, int xlength, double dx, double dy, dou
   int j = 0;
   int k = 0;
 
-  for(i = 0; i < xlength+2; i++) {
-    for(j = 0; j < xlength+2; j++) {
-      for (k = 0; k < xlength+2; k++) {
+  for(i = 0; i < xlength; i++) {
+    for(j = 0; j < xlength; j++) {
+      for (k = 0; k < xlength; k++) {
         fprintf(fp, "%f %f %f\n", originX+(i*dx), originY+(j*dy), originZ+(k*dz) );
       }
     }
