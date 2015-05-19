@@ -56,3 +56,14 @@ double dot2(const int * const v1, const double * const v2)
 
     return result;
 }
+
+double doti(const int * const v1, const int * const v2)
+{
+    double result = 0;
+    for (int i = 0; i < NUMBER_OF_COORDINATES; i++)
+    {
+        result += (double)(v1[i]) * (double)(v2[i]);
+    }
+
+    return result;
+}
