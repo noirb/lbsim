@@ -22,27 +22,26 @@ int main(int argc, char *argv[]){
         return 0; // exit if readParameters returned an error
     }
 
-    velocityWall[0] = 1.0;
-    velocityWall[1] = 0.0;
-    velocityWall[2] = 0.0;
-
     // collideField & streamField each have Q * (xlength + 2) ^ D cells
     //                    Q == 19, D == 3
-    collideField = (double*) malloc(sizeof(double) * 19 * pow(xlength+2, 3));
-    streamField  = (double*) malloc(sizeof(double) * 19 * pow(xlength+2, 3));
+    collideField = (double*) calloc(19 * pow(xlength+2, 3), sizeof(double));
+    streamField  = (double*) calloc(19 * pow(xlength+2, 3), sizeof(double));
       // flagField contains (xlength + 2) ^ D cells
-    flagField = (int*) malloc(sizeof(int) * pow(xlength+2, 3));
+    flagField = (int*) calloc(pow(xlength+2, 3), sizeof(int));
 
     initialiseFields(collideField, streamField, flagField, xlength);
 
     for(int t = 0; t < timesteps; t++)
     {
+        printf("\nt: %d\n--------\n\n", t);
         double *swap=NULL;
         doStreaming(collideField, streamField, flagField, xlength);
         swap = collideField;
         collideField = streamField;
         streamField = swap;
-        doCollision(collideField, flagField, &tau, xlength);
+        
+        double v = doCollision(collideField, flagField, &tau, xlength);
+        printf("Mach @ t %d: %f\n", t, v / C_S);
         treatBoundary(collideField,flagField,velocityWall,xlength);
 
         if (t%timestepsPerPlotting==0)
