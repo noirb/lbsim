@@ -2,10 +2,20 @@
 //#include "LBDefinitions.h"
 //#include "computeCellValues.h"
 #include <stdio.h>
+#include <math.h>
 
-#define FINV(xlength, x, y, z, i) collideField[INDEXOF((xlength), (x) + LATTICEVELOCITIES[(i)][0], (y) + LATTICEVELOCITIES[(i)][1], (z) + LATTICEVELOCITIES[(i)][2], 18 - (i))]
-#define WALL(density, i) 2*LATTICEWEIGHTS[(i)]*(density)*(dot2(LATTICEVELOCITIES[(i)], wallVelocity) / (C_S*C_S))
+#define FINV(xlength, x, y, z, i) (collideField[INDEXOF((xlength), (x) + LATTICEVELOCITIES[(i)][0], (y) + LATTICEVELOCITIES[(i)][1], (z) + LATTICEVELOCITIES[(i)][2], 18 - (i))])
 
+#define _WALL(density, i, wallVelocity) (2*LATTICEWEIGHTS[(i)]*(density)*(dot2(LATTICEVELOCITIES[(i)], wallVelocity) / ((C_S*C_S) * sqrt(doti(LATTICEVELOCITIES[(i)], LATTICEVELOCITIES[(i)]) ))) )
+#define WALL(density, i, wallVelocity) _WALL(density, i, wallVelocity) 
+//__extension__({wallDetails(density, i, wallVelocity); _WALL(density, i, wallVelocity); })
+/*
+void wallDetails(const double density, int i, const double* wallVelocity)
+{
+    printf("  WALL\n--------\n");
+    printf("i: %d\nCi: (%d, %d, %d)\nWi: %f\nDensity: %f\nCi . U: %f\nResult: %f\n------\n\n", i, LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2], LATTICEWEIGHTS[i], density, dot2(LATTICEVELOCITIES[(i)], wallVelocity), _WALL(density, i, wallVelocity));
+}
+*/
 void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
   //loop over the boundaries
 
@@ -19,6 +29,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     const int xnz[5] = {0, 5, 6, 7, 14};
     const int oyz[5] = {3, 7, 10, 13, 17};
     const int nyz[5] = {1, 5, 8, 11, 15};
+
 
     //inner cells
     for (int i = 1; i <= xlength; i++)
@@ -41,7 +52,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                     {
                         ind = INDEXOF(xlength, i + LATTICEVELOCITIES[l][0], j + LATTICEVELOCITIES[l][1], k + LATTICEVELOCITIES[l][2], 0);
                         computeDensity(collideField+ind, &den);
-                        collideField[INDEXOF(xlength, i, j, k, l)] = FINV(xlength, i, j, k, l) + WALL(den, l);
+                        collideField[INDEXOF(xlength, i, j, k, l)] = FINV(xlength, i, j, k, l) + WALL(den, l, wallVelocity);
                     }
                 }
             }
@@ -67,7 +78,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyo[l]][0], j + LATTICEVELOCITIES[xyo[l]][1], 0 + LATTICEVELOCITIES[xyo[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(xlength, i, j, 0, xyo[l])] = FINV(xlength, i, j, 0, xyo[l]) + WALL(den, xyo[l]);
+                    collideField[INDEXOF(xlength, i, j, 0, xyo[l])] = FINV(xlength, i, j, 0, xyo[l]) + WALL(den, xyo[l], wallVelocity);
                 }
             }
 
@@ -85,7 +96,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xyn[l]][0], j + LATTICEVELOCITIES[xyn[l]][1], xlength+1 + LATTICEVELOCITIES[xyn[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(xlength, i, j, xlength+1, xyn[l])] = FINV(xlength, i, j, xlength+1, xyn[l]) + WALL(den, xyn[l]);
+                    collideField[INDEXOF(xlength, i, j, xlength+1, xyn[l])] = FINV(xlength, i, j, xlength+1, xyn[l]) + WALL(den, xyn[l], wallVelocity);
                 }
             }
         }
@@ -111,7 +122,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     ind = INDEXOF(xlength, 0 + LATTICEVELOCITIES[oyz[l]][0], j+LATTICEVELOCITIES[oyz[l]][1], k+LATTICEVELOCITIES[oyz[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(xlength, 0, j, k, oyz[l])] = FINV(xlength, 0, j, k, oyz[l]) + WALL(den, oyz[l]);
+                    collideField[INDEXOF(xlength, 0, j, k, oyz[l])] = FINV(xlength, 0, j, k, oyz[l]) + WALL(den, oyz[l], wallVelocity);
                 }
             }
 
@@ -130,7 +141,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     ind = INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[nyz[l]][0], j+LATTICEVELOCITIES[nyz[l]][1], k+LATTICEVELOCITIES[nyz[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(xlength, xlength+1, j, k, nyz[l])] = FINV(xlength, xlength+1, j, k, nyz[l]) + WALL(den, nyz[l]);
+                    collideField[INDEXOF(xlength, xlength+1, j, k, nyz[l])] = FINV(xlength, xlength+1, j, k, nyz[l]) + WALL(den, nyz[l], wallVelocity);
                 }
             }
         }
@@ -156,7 +167,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     ind = INDEXOF(xlength, i+LATTICEVELOCITIES[xoz[l]][0], 0+LATTICEVELOCITIES[xoz[l]][1], k+LATTICEVELOCITIES[xoz[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(xlength, i, 0, k, xoz[l])] = FINV(xlength, i, 0, k, xoz[l]) + WALL(den, xoz[l]);
+                    collideField[INDEXOF(xlength, i, 0, k, xoz[l])] = FINV(xlength, i, 0, k, xoz[l]) + WALL(den, xoz[l], wallVelocity);
                 }
             }
 
@@ -175,7 +186,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 {
                     ind = INDEXOF(xlength, i + LATTICEVELOCITIES[xnz[l]][0], xlength+1 + LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(xlength, i, xlength+1, k, xnz[l])] = FINV(xlength, i, xlength+1, k, xnz[l]) + WALL(den, xnz[l]);
+                    collideField[INDEXOF(xlength, i, xlength+1, k, xnz[l])] = FINV(xlength, i, xlength+1, k, xnz[l]) + WALL(den, xnz[l], wallVelocity);
                 }
             }
         }
@@ -199,7 +210,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, i + LATTICEVELOCITIES[18][0], LATTICEVELOCITIES[18][1], LATTICEVELOCITIES[18][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, i, 0, 0, 18)] = FINV(xlength, i, 0, 0, 18) + WALL(den, 18);
+            collideField[INDEXOF(xlength, i, 0, 0, 18)] = FINV(xlength, i, 0, 0, 18) + WALL(den, 18, wallVelocity);
         }
 
         //(i, 0, xlength+1)
@@ -212,7 +223,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1 + LATTICEVELOCITIES[4][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, i, 0, xlength+1, 4)] = FINV(xlength, i, 0, xlength+1, 4) + WALL(den, 4);
+            collideField[INDEXOF(xlength, i, 0, xlength+1, 4)] = FINV(xlength, i, 0, xlength+1, 4) + WALL(den, 4, wallVelocity);
         }
 
         //(i, xlength+1, 0)
@@ -225,7 +236,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, i + LATTICEVELOCITIES[14][0], xlength+1+LATTICEVELOCITIES[14][1], LATTICEVELOCITIES[14][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, i, xlength+1, 0, 14)] = FINV(xlength, i, xlength+1, 0, 14) + WALL(den, 14);
+            collideField[INDEXOF(xlength, i, xlength+1, 0, 14)] = FINV(xlength, i, xlength+1, 0, 14) + WALL(den, 14, wallVelocity);
         }
 
         //(i, xlength+1, xlength+1)
@@ -238,7 +249,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, i + LATTICEVELOCITIES[0][0], xlength+1+LATTICEVELOCITIES[0][1], xlength+1+LATTICEVELOCITIES[0][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, i, xlength+1, xlength+1, 0)] = FINV(xlength, i, xlength+1, xlength+1, 0) + WALL(den, 0);
+            collideField[INDEXOF(xlength, i, xlength+1, xlength+1, 0)] = FINV(xlength, i, xlength+1, xlength+1, 0) + WALL(den, 0, wallVelocity);
         }
     }
 
@@ -256,7 +267,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, LATTICEVELOCITIES[17][0], j+LATTICEVELOCITIES[17][1], LATTICEVELOCITIES[17][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, 0, j, 0, 17)] = FINV(xlength, 0, j, 0, 17) + WALL(den, 17);
+            collideField[INDEXOF(xlength, 0, j, 0, 17)] = FINV(xlength, 0, j, 0, 17) + WALL(den, 17, wallVelocity);
         }
 
         //(xlength+1, j, 0)
@@ -269,7 +280,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[15][0], j+LATTICEVELOCITIES[15][1], LATTICEVELOCITIES[15][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, xlength+1, j, 0, 15)] = FINV(xlength, xlength+1, j, 0, 15) + WALL(den, 15);
+            collideField[INDEXOF(xlength, xlength+1, j, 0, 15)] = FINV(xlength, xlength+1, j, 0, 15) + WALL(den, 15, wallVelocity);
         }
 
         //(0, j, xlength+1)
@@ -282,7 +293,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, LATTICEVELOCITIES[3][0], j+LATTICEVELOCITIES[3][1], xlength+1+LATTICEVELOCITIES[3][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, 0, j, xlength+1, 3)] = FINV(xlength, 0, j, xlength+1, 3) + WALL(den, 3);
+            collideField[INDEXOF(xlength, 0, j, xlength+1, 3)] = FINV(xlength, 0, j, xlength+1, 3) + WALL(den, 3, wallVelocity);
         }
 
         //(xlength+1, j, xlength+1)
@@ -295,7 +306,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[1][0], j+LATTICEVELOCITIES[1][1], xlength+1+LATTICEVELOCITIES[1][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength,xlength+1, j, xlength+1, 1)] = FINV(xlength, xlength+1, j, xlength+1, 1) + WALL(den, 1);
+            collideField[INDEXOF(xlength,xlength+1, j, xlength+1, 1)] = FINV(xlength, xlength+1, j, xlength+1, 1) + WALL(den, 1, wallVelocity);
         }
     }
 
@@ -313,7 +324,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, LATTICEVELOCITIES[13][0], LATTICEVELOCITIES[13][1], k+LATTICEVELOCITIES[13][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength, 0, 0, k, 13)] = FINV(xlength, 0, 0, k, 13) + WALL(den, 13);
+            collideField[INDEXOF(xlength, 0, 0, k, 13)] = FINV(xlength, 0, 0, k, 13) + WALL(den, 13, wallVelocity);
         }
 
         //(xlength+1, 0, k)
@@ -326,7 +337,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, xlength+1 + LATTICEVELOCITIES[11][0], LATTICEVELOCITIES[11][1], k+LATTICEVELOCITIES[11][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength,xlength+1, 0, k, 11)] = FINV(xlength, xlength+1, 0, k, 11) + WALL(den, 11);
+            collideField[INDEXOF(xlength,xlength+1, 0, k, 11)] = FINV(xlength, xlength+1, 0, k, 11) + WALL(den, 11, wallVelocity);
         }
 
         //(0, xlength+1, k)
@@ -339,7 +350,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, LATTICEVELOCITIES[7][0], xlength+1+LATTICEVELOCITIES[7][1], k+LATTICEVELOCITIES[7][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength,0, xlength+1, k, 7)] = FINV(xlength, 0, xlength+1, k, 7) + WALL(den, 7);
+            collideField[INDEXOF(xlength,0, xlength+1, k, 7)] = FINV(xlength, 0, xlength+1, k, 7) + WALL(den, 7, wallVelocity);
         }
 
         //(xlength+1, xlength+1, k)
@@ -352,7 +363,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         {
             ind = INDEXOF(xlength, xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = FINV(xlength, xlength+1, xlength+1, k, 5) + WALL(den, 5);
+            collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = FINV(xlength, xlength+1, xlength+1, k, 5) - WALL(den, 5, wallVelocity);
         }
     }
 
