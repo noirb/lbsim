@@ -1,12 +1,12 @@
-xlength		25
+xlength		30
 
-tau         1.5
+tau         0.6
 
-velocityWallX 1
+velocityWallX 0.1
 velocityWallY 0
 velocityWallZ 0
 
-timesteps    100
+timesteps    601
 
-timestepsPerPlotting 10
+timestepsPerPlotting 5
 
