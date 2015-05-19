@@ -29,11 +29,12 @@ int main(int argc, char *argv[]){
       // flagField contains (xlength + 2) ^ D cells
     flagField = (int*) calloc(pow(xlength+2, 3), sizeof(int));
 
+    printf("Initializing fields..."); fflush(stdout);
     initialiseFields(collideField, streamField, flagField, xlength);
+    printf("Done!\n");
 
     for(int t = 0; t < timesteps; t++)
     {
-        printf("\nt: %d\n--------\n\n", t);
         double *swap=NULL;
         doStreaming(collideField, streamField, flagField, xlength);
         swap = collideField;
@@ -45,7 +46,10 @@ int main(int argc, char *argv[]){
 
         if (t%timestepsPerPlotting==0)
         {
+            printf("Writing output for timestep %d/%d...", t, timesteps); fflush(stdout);
+            
             writeVtkOutput(collideField, flagField, argv[1], t, xlength);
+            printf("Done!\n");
         }
     }
 
