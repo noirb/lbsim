@@ -39,9 +39,8 @@ int main(int argc, char *argv[]){
         swap = collideField;
         collideField = streamField;
         streamField = swap;
-        
-        double v = doCollision(collideField, flagField, &tau, xlength);
-        printf("Mach @ t %d: %f\n", t, v / C_S);
+
+        doCollision(collideField, flagField, &tau, xlength);
         treatBoundary(collideField,flagField,velocityWall,xlength);
 
         if (t%timestepsPerPlotting==0)
