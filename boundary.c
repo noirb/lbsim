@@ -8,14 +8,7 @@
 
 #define _WALL(density, i, wallVelocity) (2*LATTICEWEIGHTS[(i)]*(density)*(dot2(LATTICEVELOCITIES[(i)], wallVelocity) / ((C_S*C_S) )))
 #define WALL(density, i, wallVelocity) _WALL(density, i, wallVelocity) 
-//__extension__({wallDetails(density, i, wallVelocity); _WALL(density, i, wallVelocity); })
-/*
-void wallDetails(const double density, int i, const double* wallVelocity)
-{
-    printf("  WALL\n--------\n");
-    printf("i: %d\nCi: (%d, %d, %d)\nWi: %f\nDensity: %f\nCi . U: %f\nResult: %f\n------\n\n", i, LATTICEVELOCITIES[i][0], LATTICEVELOCITIES[i][1], LATTICEVELOCITIES[i][2], LATTICEWEIGHTS[i], density, dot2(LATTICEVELOCITIES[(i)], wallVelocity), _WALL(density, i, wallVelocity));
-}
-*/
+
 void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
   //loop over the boundaries
 
