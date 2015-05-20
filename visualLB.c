@@ -18,12 +18,14 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
     return;
   }
 
-  // allocate space to store densities
+  // allocate space to store densities so we don't recompute them 
+  // when computing the velocity
   double *densities = (double*) malloc(sizeof(double) * pow(xlength+2, 3));
 
   write_vtkHeader( fp, xlength);
   write_vtkPointCoordinates(fp, xlength, 1, 1, 1);
 
+  // output density values for every inner cell
   fprintf(fp,"\n");
   fprintf(fp,"POINT_DATA %i \n", (xlength)*(xlength)*(xlength) );
   fprintf(fp, "SCALARS density float 1 \n"); 
@@ -37,6 +39,7 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
     }
   }
 
+  // output flag values for every inner cell
   fprintf(fp, "\n");
   fprintf(fp, "SCALARS flag float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
@@ -48,6 +51,7 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
     }
   }
 
+  // output velocity values for every inner cell
   fprintf(fp,"\n");
   fprintf(fp, "VECTORS velocity float\n");
   for(i = 1; i < xlength+1; i++) {
@@ -60,6 +64,7 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
     }
   }
 
+  // cleanup
   free(densities);
 
   if( fclose(fp) )
@@ -102,6 +107,7 @@ void write_vtkPointCoordinates( FILE *fp, int xlength, double dx, double dy, dou
   int j = 0;
   int k = 0;
 
+  // generate equal-spaced grid points
   for(i = 0; i < xlength; i++) {
     for(j = 0; j < xlength; j++) {
       for (k = 0; k < xlength; k++) {

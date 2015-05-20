@@ -1,8 +1,8 @@
 xlength		10
 
-tau         0.5
+tau         1.5
 
-velocityWallX 1
+velocityWallX 0.01
 velocityWallY 0
 velocityWallZ 0
 
