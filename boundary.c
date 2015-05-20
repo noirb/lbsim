@@ -1,11 +1,11 @@
 #include "boundary.h"
-//#include "LBDefinitions.h"
-//#include "computeCellValues.h"
 #include <stdio.h>
 #include <math.h>
 
+//macro for computing f_inv
 #define FINV(xlength, x, y, z, i) (collideField[INDEXOF((xlength), (x) + LATTICEVELOCITIES[(i)][0], (y) + LATTICEVELOCITIES[(i)][1], (z) + LATTICEVELOCITIES[(i)][2], 18 - (i))])
 
+//macro for the calculation of the impact from the moving wall for treating moving wall boundary
 #define _WALL(density, i, wallVelocity) (2*LATTICEWEIGHTS[(i)]*(density)*(dot2(LATTICEVELOCITIES[(i)], wallVelocity) / ((C_S*C_S) )))
 #define WALL(density, i, wallVelocity) _WALL(density, i, wallVelocity) 
 
@@ -13,18 +13,21 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
   //loop over the boundaries
 
     int flag;
-    double den;
-    int ind;
-    int N = 5;
-    const int xyo[5] = {14, 15, 16, 17, 18};
-    const int xyn[5] = {0, 1 ,2, 3, 4};
-    const int xoz[5] = {4, 11, 12, 13, 18};
-    const int xnz[5] = {0, 5, 6, 7, 14};
-    const int oyz[5] = {3, 7, 10, 13, 17};
-    const int nyz[5] = {1, 5, 8, 11, 15};
+    double den; // the variable to store the density of the current cell, which is needed for treating moving wall boundary
+    int ind; // temporary variable for storing indexes
+
+    int N = 5;//number of fluid cells, which can be accessed from the domain boundary (sides of the cube)
+    //using lattice directions
+    const int xyo[5] = {14, 15, 16, 17, 18}; // Directions, allowed for the plane xy0 (z=0)
+    const int xyn[5] = {0, 1 ,2, 3, 4}; // Directions, allowed for the plane xyn (z=n)
+    const int xoz[5] = {4, 11, 12, 13, 18}; // Directions, allowed for the plane x0z (y = 0)
+    const int xnz[5] = {0, 5, 6, 7, 14}; // Directions, allowed for the plane xnz (y=n)
+    const int oyz[5] = {3, 7, 10, 13, 17}; // Directions, allowed for the plane xnz (z=0)
+    const int nyz[5] = {1, 5, 8, 11, 15}; // Directions, allowed for the plane xnz (z=n)
 
 
-    //inner cells
+    //inner cells. Needed only in case there are some boundary cells inside the fluid. In current assignment
+    //both if-statements are always false
     for (int i = 1; i <= xlength; i++)
     {
         for (int j = 1; j <= xlength; j++)
@@ -52,7 +55,8 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
     }
 
-    //xyo and XYN planes
+ // loop over different planes (sides of the cube) to update only the directions which point to the fluid
+    //loop over xyo and XYN planes
     for(int i = 1; i <= xlength; i++)
     {
         for (int j = 1; j <= xlength; j++)
@@ -95,7 +99,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
     }
 
-    //OYZ and NYZ
+    //loop over OYZ and NYZ planes
     for(int j = 1; j <= xlength; j++)
     {
         for (int k = 1; k <= xlength; k++)
@@ -140,7 +144,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
     }
 
-    //X0Z and XNZ
+    //loop over X0Z and XNZ planes
     for(int i = 1; i <= xlength; i++)
     {
         for (int k = 1; k <= xlength; k++)
@@ -185,7 +189,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
     }
 
-
+//Loop over the edges of the cube, to update only one direction pointing to the fluid.
         /* ----- */
         /* Edges */
         /* ----- */
