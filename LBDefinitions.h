@@ -58,7 +58,14 @@
 
   static const double C_S = 1.0 / 1.73205080757; // 1 / sqrt(3.0);
 
-  typedef enum { FLUID, NO_SLIP, MOVING_WALL } cell_flag;
+  typedef enum { 
+        FLUID,
+        NO_SLIP,
+        MOVING_WALL,
+        IN_FLOW,
+        OUT_FLOW,
+        FREE_SLIP
+                } cell_flag;
 
 
   /* ---------------------------------------- */
