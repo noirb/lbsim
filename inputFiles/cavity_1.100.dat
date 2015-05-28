@@ -1,4 +1,6 @@
-xlength		50
+xlength		100
+ylength		100
+zlength		100
 
 tau         1.5
 
@@ -10,3 +12,4 @@ timesteps    101
 
 timestepsPerPlotting 10
 
+cellDataFile cavity_1.100.cel

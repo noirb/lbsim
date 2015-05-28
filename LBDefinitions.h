@@ -65,7 +65,7 @@
         IN_FLOW,
         OUT_FLOW,
         FREE_SLIP
-                } cell_flag;
+        } cell_flag;
 
 
   /* ---------------------------------------- */
