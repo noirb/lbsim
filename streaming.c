@@ -4,8 +4,8 @@
 void doStreaming(double *collideField, double *streamField, flag_data *flagField, int xlength, int ylength, int zlength)
 {
     for (int i = 1; i <= xlength; i++){
-        for (int j = 1; j <= xlength; j++){
-            for (int k = 1; k <= xlength; k++){
+        for (int j = 1; j <= ylength; j++){
+            for (int k = 1; k <= zlength; k++){
                 if (flagField[FINDEXOF(i, j, k)].flag == FLUID)
                 {
                     for (int dir = 0; dir < NUMBER_OF_LATTICE_DIRECTIONS; dir++){

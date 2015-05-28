@@ -1,12 +1,8 @@
-xlength		10
-ylength		10
-zlength		10
+xlength		30
+ylength		30
+zlength		20
 
 tau         1.5
-
-velocityWallX 0.01
-velocityWallY 0
-velocityWallZ 0
 
 timesteps    100
 

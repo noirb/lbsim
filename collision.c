@@ -14,8 +14,8 @@ void doCollision(double *collideField, flag_data *flagField, const double * cons
     double feq[19];
 
     for (int i = 1; i <= xlength; i++){
-        for (int j = 1; j <= xlength; j++){
-            for (int k = 1; k <= xlength; k++){
+        for (int j = 1; j <= ylength; j++){
+            for (int k = 1; k <= zlength; k++){
                 computeDensity(&(collideField[INDEXOF(i, j, k, 0)]), &density);
                 computeVelocity(&(collideField[INDEXOF(i, j, k, 0)]), &density, velocity);
                 computeFeq(&density, velocity, feq);

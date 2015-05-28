@@ -29,9 +29,9 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
     // For the simple cavity case the inner conditionals are always false
     for (int i = 1; i <= xlength; i++)
     {
-        for (int j = 1; j <= xlength; j++)
+        for (int j = 1; j <= ylength; j++)
         {
-            for(int k = 1; k <= xlength; k++)
+            for(int k = 1; k <= zlength; k++)
             {
                 flag = flagField[FINDEXOF(i, j, k)].flag;
                 if (flag == NO_SLIP)
@@ -61,7 +61,7 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
     //loop over xyo and XYN planes
     for(int i = 1; i <= xlength; i++)
     {
-        for (int j = 1; j <= xlength; j++)
+        for (int j = 1; j <= ylength; j++)
         {
             flag = flagField[FINDEXOF(i, j, 0)].flag;
             if (flag == NO_SLIP) //update 14, 15, 16, 17, 18
@@ -81,21 +81,21 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
                 }
             }
 
-            flag = flagField[FINDEXOF(i, j, xlength+1)].flag;
+            flag = flagField[FINDEXOF(i, j, zlength+1)].flag;
             if (flag == NO_SLIP) //update 0, 1, 2, 3, 4
             {
                 for (int l = 0; l < N; l++)
                 {
-                    collideField[INDEXOF(i, j, xlength+1, xyn[l])] = FINV(i, j, xlength+1, xyn[l]);
+                    collideField[INDEXOF(i, j, zlength+1, xyn[l])] = FINV(i, j, zlength+1, xyn[l]);
                 }
             }
             else if (flag == MOVING_WALL)
             {
                 for(int l = 0; l < N; l++)
                 {
-                    ind = INDEXOF(i + LATTICEVELOCITIES[xyn[l]][0], j + LATTICEVELOCITIES[xyn[l]][1], xlength+1 + LATTICEVELOCITIES[xyn[l]][2], 0);
+                    ind = INDEXOF(i + LATTICEVELOCITIES[xyn[l]][0], j + LATTICEVELOCITIES[xyn[l]][1], zlength+1 + LATTICEVELOCITIES[xyn[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(i, j, xlength+1, xyn[l])] = FINV(i, j, xlength+1, xyn[l]) + WALL(den, xyn[l], flagField[FINDEXOF(i, j, xlength+1)].parms);
+                    collideField[INDEXOF(i, j, zlength+1, xyn[l])] = FINV(i, j, zlength+1, xyn[l]) + WALL(den, xyn[l], flagField[FINDEXOF(i, j, zlength+1)].parms);
                 }
             }
         }
@@ -104,7 +104,7 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
     //loop over OYZ and NYZ planes
     for(int j = 1; j <= xlength; j++)
     {
-        for (int k = 1; k <= xlength; k++)
+        for (int k = 1; k <= zlength; k++)
         {
             //0YZ
             flag = flagField[FINDEXOF(0, j, k)].flag;
@@ -149,7 +149,7 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
     //loop over X0Z and XNZ planes
     for(int i = 1; i <= xlength; i++)
     {
-        for (int k = 1; k <= xlength; k++)
+        for (int k = 1; k <= zlength; k++)
         {
             //X0Z
             flag = flagField[FINDEXOF(i, 0, k)].flag;
@@ -171,21 +171,21 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
             }
 
             //XNZ
-            flag = flagField[FINDEXOF(i, xlength+1, k)].flag;
+            flag = flagField[FINDEXOF(i, ylength+1, k)].flag;
             if (flag == NO_SLIP) //update 0, 5, 7, 6, 14
             {
                 for (int l = 0; l < N; l++)
                 {
-                    collideField[INDEXOF(i, xlength+1, k, xnz[l])] = FINV(i, xlength+1, k, xnz[l]);
+                    collideField[INDEXOF(i, ylength+1, k, xnz[l])] = FINV(i, ylength+1, k, xnz[l]);
                 }
             }
             else if (flag == MOVING_WALL) //update directions 0, 5, 7, 6, 14
             {
                 for(int l = 0; l < N; l++)
                 {
-                    ind = INDEXOF(i + LATTICEVELOCITIES[xnz[l]][0], xlength+1 + LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 0);
+                    ind = INDEXOF(i + LATTICEVELOCITIES[xnz[l]][0], ylength+1 + LATTICEVELOCITIES[xnz[l]][1], k+LATTICEVELOCITIES[xnz[l]][2], 0);
                     computeDensity(collideField+ind, &den);
-                    collideField[INDEXOF(i, xlength+1, k, xnz[l])] = FINV(i, xlength+1, k, xnz[l]) + WALL(den, xnz[l], flagField[FINDEXOF(i, xlength+1, k)].parms);
+                    collideField[INDEXOF(i, ylength+1, k, xnz[l])] = FINV(i, ylength+1, k, xnz[l]) + WALL(den, xnz[l], flagField[FINDEXOF(i, ylength+1, k)].parms);
                 }
             }
         }
@@ -213,49 +213,49 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
             collideField[INDEXOF(i, 0, 0, 18)] = FINV(i, 0, 0, 18) + WALL(den, 18, flagField[FINDEXOF(i, 0, 0)].parms);
         }
 
-        //(i, 0, xlength+1)
-        flag = flagField[FINDEXOF(i, 0, xlength+1)].flag;
+        //(i, 0, zlength+1)
+        flag = flagField[FINDEXOF(i, 0, zlength+1)].flag;
         if (flag == NO_SLIP) //update 4
         {
-            collideField[INDEXOF(i, 0, xlength+1, 4)] = FINV(i, 0, xlength+1, 4);
+            collideField[INDEXOF(i, 0, zlength+1, 4)] = FINV(i, 0, zlength+1, 4);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], xlength+1 + LATTICEVELOCITIES[4][2], 0);
+            ind = INDEXOF(i + LATTICEVELOCITIES[4][0], LATTICEVELOCITIES[4][1], zlength+1 + LATTICEVELOCITIES[4][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(i, 0, xlength+1, 4)] = FINV(i, 0, xlength+1, 4) + WALL(den, 4, flagField[FINDEXOF(i, 0, xlength+1)].parms);
+            collideField[INDEXOF(i, 0, zlength+1, 4)] = FINV(i, 0, zlength+1, 4) + WALL(den, 4, flagField[FINDEXOF(i, 0, zlength+1)].parms);
         }
 
-        //(i, xlength+1, 0)
-        flag = flagField[FINDEXOF(i, xlength+1, 0)].flag;
+        //(i, ylength+1, 0)
+        flag = flagField[FINDEXOF(i, ylength+1, 0)].flag;
         if (flag == NO_SLIP) //update 14
         {
-            collideField[INDEXOF(i, xlength+1, 0, 14)] = FINV(i, xlength+1, 0, 14);
+            collideField[INDEXOF(i, ylength+1, 0, 14)] = FINV(i, ylength+1, 0, 14);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(i + LATTICEVELOCITIES[14][0], xlength+1+LATTICEVELOCITIES[14][1], LATTICEVELOCITIES[14][2], 0);
+            ind = INDEXOF(i + LATTICEVELOCITIES[14][0], ylength+1+LATTICEVELOCITIES[14][1], LATTICEVELOCITIES[14][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(i, xlength+1, 0, 14)] = FINV(i, xlength+1, 0, 14) + WALL(den, 14, flagField[FINDEXOF(i, xlength+1, 0)].parms);
+            collideField[INDEXOF(i, ylength+1, 0, 14)] = FINV(i, ylength+1, 0, 14) + WALL(den, 14, flagField[FINDEXOF(i, ylength+1, 0)].parms);
         }
 
-        //(i, xlength+1, xlength+1)
-        flag = flagField[FINDEXOF(i, xlength+1, xlength+1)].flag;
+        //(i, ylength+1, zlength+1)
+        flag = flagField[FINDEXOF(i, ylength+1, zlength+1)].flag;
         if (flag == NO_SLIP) //update 0
         {
-            collideField[INDEXOF(i, xlength+1, xlength+1, 0)] = FINV(i, xlength+1, xlength+1, 0);
+            collideField[INDEXOF(i, ylength+1, zlength+1, 0)] = FINV(i, ylength+1, zlength+1, 0);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(i + LATTICEVELOCITIES[0][0], xlength+1+LATTICEVELOCITIES[0][1], xlength+1+LATTICEVELOCITIES[0][2], 0);
+            ind = INDEXOF(i + LATTICEVELOCITIES[0][0], ylength+1+LATTICEVELOCITIES[0][1], zlength+1+LATTICEVELOCITIES[0][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(i, xlength+1, xlength+1, 0)] = FINV(i, xlength+1, xlength+1, 0) + WALL(den, 0, flagField[FINDEXOF(i, xlength+1, xlength+1)].parms);
+            collideField[INDEXOF(i, ylength+1, zlength+1, 0)] = FINV(i, ylength+1, zlength+1, 0) + WALL(den, 0, flagField[FINDEXOF(i, ylength+1, zlength+1)].parms);
         }
     }
 
 
     //Y-edges
-    for(int j = 1; j <= xlength; j++)
+    for(int j = 1; j <= ylength; j++)
     {
         //(0, j, 0)
         flag = flagField[FINDEXOF(0, j, 0)].flag;
@@ -283,36 +283,36 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
             collideField[INDEXOF(xlength+1, j, 0, 15)] = FINV(xlength+1, j, 0, 15) + WALL(den, 15, flagField[FINDEXOF(xlength+1, j, 0)].parms);
         }
 
-        //(0, j, xlength+1)
-        flag = flagField[FINDEXOF(0, j, xlength+1)].flag;
+        //(0, j, zlength+1)
+        flag = flagField[FINDEXOF(0, j, zlength+1)].flag;
         if (flag == NO_SLIP) //update 3
         {
-            collideField[INDEXOF(0, j, xlength+1, 3)] = FINV(0, j, xlength+1, 3);
+            collideField[INDEXOF(0, j, zlength+1, 3)] = FINV(0, j, zlength+1, 3);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(LATTICEVELOCITIES[3][0], j+LATTICEVELOCITIES[3][1], xlength+1+LATTICEVELOCITIES[3][2], 0);
+            ind = INDEXOF(LATTICEVELOCITIES[3][0], j+LATTICEVELOCITIES[3][1], zlength+1+LATTICEVELOCITIES[3][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(0, j, xlength+1, 3)] = FINV(0, j, xlength+1, 3) + WALL(den, 3, flagField[FINDEXOF(0, j, xlength+1)].parms);
+            collideField[INDEXOF(0, j, zlength+1, 3)] = FINV(0, j, zlength+1, 3) + WALL(den, 3, flagField[FINDEXOF(0, j, zlength+1)].parms);
         }
 
-        //(xlength+1, j, xlength+1)
-        flag = flagField[FINDEXOF(xlength+1, j, xlength+1)].flag;
+        //(xlength+1, j, zlength+1)
+        flag = flagField[FINDEXOF(xlength+1, j, zlength+1)].flag;
         if (flag == NO_SLIP) //update 1
         {
-            collideField[INDEXOF(xlength+1, j, xlength+1, 1)] = FINV(xlength+1, j, xlength+1, 1);
+            collideField[INDEXOF(xlength+1, j, zlength+1, 1)] = FINV(xlength+1, j, zlength+1, 1);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(xlength+1 + LATTICEVELOCITIES[1][0], j+LATTICEVELOCITIES[1][1], xlength+1+LATTICEVELOCITIES[1][2], 0);
+            ind = INDEXOF(xlength+1 + LATTICEVELOCITIES[1][0], j+LATTICEVELOCITIES[1][1], zlength+1+LATTICEVELOCITIES[1][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength+1, j, xlength+1, 1)] = FINV(xlength+1, j, xlength+1, 1) + WALL(den, 1, flagField[FINDEXOF(xlength+1, j, xlength+1)].parms);
+            collideField[INDEXOF(xlength+1, j, zlength+1, 1)] = FINV(xlength+1, j, zlength+1, 1) + WALL(den, 1, flagField[FINDEXOF(xlength+1, j, zlength+1)].parms);
         }
     }
 
 
     //Z-edges
-    for(int k = 1; k <= xlength; k++)
+    for(int k = 1; k <= ylength; k++)
     {
         //(0, 0, k)
         flag = flagField[FINDEXOF(0, 0, k)].flag;
@@ -341,29 +341,29 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
         }
 
         //(0, xlength+1, k)
-        flag = flagField[FINDEXOF(0, xlength+1, k)].flag;
+        flag = flagField[FINDEXOF(0, ylength+1, k)].flag;
         if (flag == NO_SLIP) //update 7
         {
-            collideField[INDEXOF(0, xlength+1, k, 7)] = FINV(0, xlength+1, k, 7);
+            collideField[INDEXOF(0, ylength+1, k, 7)] = FINV(0, ylength+1, k, 7);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(LATTICEVELOCITIES[7][0], xlength+1+LATTICEVELOCITIES[7][1], k+LATTICEVELOCITIES[7][2], 0);
+            ind = INDEXOF(LATTICEVELOCITIES[7][0], ylength+1+LATTICEVELOCITIES[7][1], k+LATTICEVELOCITIES[7][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(0, xlength+1, k, 7)] = FINV(0, xlength+1, k, 7) + WALL(den, 7, flagField[FINDEXOF(0, xlength+1, k)].parms);
+            collideField[INDEXOF(0, ylength+1, k, 7)] = FINV(0, ylength+1, k, 7) + WALL(den, 7, flagField[FINDEXOF(0, ylength+1, k)].parms);
         }
 
-        //(xlength+1, xlength+1, k)
-        flag = flagField[FINDEXOF(xlength+1, xlength+1, k)].flag;
+        //(xlength+1, ylength+1, k)
+        flag = flagField[FINDEXOF(xlength+1, ylength+1, k)].flag;
         if (flag == NO_SLIP) //update 5
         {
-            collideField[INDEXOF(xlength+1, xlength+1, k, 5)] = FINV(xlength+1, xlength+1, k, 5);
+            collideField[INDEXOF(xlength+1, ylength+1, k, 5)] = FINV(xlength+1, ylength+1, k, 5);
         }
         else if (flag == MOVING_WALL)
         {
-            ind = INDEXOF(xlength+1+LATTICEVELOCITIES[5][0], xlength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 0);
+            ind = INDEXOF(xlength+1+LATTICEVELOCITIES[5][0], ylength+1+LATTICEVELOCITIES[5][1], k+LATTICEVELOCITIES[5][2], 0);
             computeDensity(collideField+ind, &den);
-            collideField[INDEXOF(xlength+1, xlength+1, k, 5)] = FINV(xlength+1, xlength+1, k, 5) + WALL(den, 5, flagField[FINDEXOF(xlength+1, xlength+1, k)].parms);
+            collideField[INDEXOF(xlength+1, ylength+1, k, 5)] = FINV(xlength+1, ylength+1, k, 5) + WALL(den, 5, flagField[FINDEXOF(xlength+1, ylength+1, k)].parms);
         }
     }
 
