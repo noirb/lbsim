@@ -8,7 +8,7 @@ void computePostCollisionDistributions(double *currentCell, const double * const
     }
 }
 
-void doCollision(double *collideField, int *flagField, const double * const tau, int xlength){
+void doCollision(double *collideField, flag_data *flagField, const double * const tau, int xlength){
     double density;
     double velocity[3];
     double feq[19];

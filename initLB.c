@@ -48,7 +48,7 @@ int readParameters(
 }
 
 
-void initialiseFields(double *collideField, double *streamField, int *flagField, int xlength, int ylength, int zlength, char* cellDataFile)
+void initialiseFields(double *collideField, double *streamField, flag_data *flagField, int xlength, int ylength, int zlength, char* cellDataFile)
 {
   FILE* cellData;
   char  line[80];
@@ -82,7 +82,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
         }
 
         // set flags at (i,j,k) to FLUID while we're here; obstacle & boundaries set below
-        flagField[FINDEXOF(xlength, i, j, k)] = FLUID;
+        flagField[FINDEXOF(xlength, i, j, k)].flag = FLUID;
       }
     }
   }
@@ -194,15 +194,22 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
         // if wildcards were found, set all cells that match, otherwise just set this cell
         if (wildCardFlags)
-            setFlags(flagField, cf, cx, cy, cz, xlength, ylength, zlength, wildCardFlags);
+        {
+            setFlags(flagField, cf, cx, cy, cz, cellParms, xlength, ylength, zlength, wildCardFlags);
+        }
         else
-            flagField[FINDEXOF(xlength, cx, cy, cz)] = cf; // set that flag!
+        {
+            flagField[FINDEXOF(xlength, cx, cy, cz)].flag = cf; // set that flag!
+            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[0] = cellParms[0];
+            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[1] = cellParms[1];
+            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[2] = cellParms[2];
+        }
     }
   }
   fclose(cellData);
 }
 
-void setFlags(int *flagField, cell_flag flag, int xstart, int ystart, int zstart, int xlength, int ylength, int zlength, vary_flags varying)
+void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int zstart, double* cell_parameters, int xlength, int ylength, int zlength, vary_flags varying)
 {
     int i, max_i; i = max_i = xstart;
     int j, max_j; j = max_j = ystart;
@@ -229,7 +236,10 @@ void setFlags(int *flagField, cell_flag flag, int xstart, int ystart, int zstart
         {
             for (k = zstart; k <= max_k; k++)
             {
-                flagField[FINDEXOF(xlength, i, j, k)] = flag;
+                flagField[FINDEXOF(xlength, i, j, k)].flag = flag;
+                flagField[FINDEXOF(xlength, i, j, k)].parameters[0] = cell_parameters[0];
+                flagField[FINDEXOF(xlength, i, j, k)].parameters[1] = cell_parameters[1];
+                flagField[FINDEXOF(xlength, i, j, k)].parameters[2] = cell_parameters[2];
             }
         }
     }

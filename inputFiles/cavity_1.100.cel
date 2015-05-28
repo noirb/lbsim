@@ -1,6 +1,9 @@
-# TODO: outer walls can be auto-filled with the same flag
+# top boundary as moving_wall
+(* 101 *) MOVING_WALL (0.01 0 0)
 
-(0, 0, *) NO_SLIP
-
-# individual cells can be manually filled by referencing specific coordinates
-(5 5 5) NO_SLIP (10 10 10.7)
+# all other walls as no_slip -- 11 here is our maximal index
+(0 * *) NO_SLIP
+(* 0 *) NO_SLIP
+(* * 0) NO_SLIP
+(* * 101) NO_SLIP
+(101 * *) NO_SLIP

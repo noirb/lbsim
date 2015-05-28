@@ -8,9 +8,9 @@
 #include "boundary.h"
 
 int main(int argc, char *argv[]){
-    double *collideField=NULL;
-    double *streamField=NULL;
-    int *flagField=NULL;
+    double    *collideField=NULL;
+    double    *streamField=NULL;
+    flag_data *flagField=NULL;
     char cellDataFile[20];
     int xlength;
     int ylength;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
     collideField = (double*) calloc(19 * totalElements, sizeof(double));
     streamField  = (double*) calloc(19 * totalElements, sizeof(double));
       // flagField contains (totalElements) ^ D cells
-    flagField = (int*) calloc(totalElements, sizeof(int));
+    flagField = (flag_data*) calloc(totalElements, sizeof(flag_data));
 
     // exit if any allocation failed
     if (collideField == NULL || streamField == NULL || flagField == NULL)

@@ -27,10 +27,10 @@ int readParameters(
 
 
 /* initialises the particle distribution functions and the flagfield */
-void initialiseFields(double *collideField, double *streamField,int *flagField, int xlength, int ylength, int zlength, char* cellDataFile);
+void initialiseFields(double *collideField, double *streamField, flag_data *flagField, int xlength, int ylength, int zlength, char* cellDataFile);
 
 // sets a region of the flagField to a specific value
-void setFlags(int *flagField, cell_flag flag, int xstart, int ystart, int zstart, int xlength, int ylength, int zlength, vary_flags varying);
+void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int zstart, double* cell_parameters,  int xlength, int ylength, int zlength, vary_flags varying);
 
 #endif
 

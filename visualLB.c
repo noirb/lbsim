@@ -3,7 +3,7 @@
 #include "LBDefinitions.h"
 #include "computeCellValues.h"
 
-void writeVtkOutput(const double * const collideField, const int * const flagField, const char * filename, unsigned int t, int xlength, int ylength, int zlength) {
+void writeVtkOutput(const double * const collideField, const flag_data * const flagField, const char * filename, unsigned int t, int xlength, int ylength, int zlength) {
   int i,j,k;
   char szFileName[80];
   FILE *fp=NULL;
@@ -46,7 +46,7 @@ void writeVtkOutput(const double * const collideField, const int * const flagFie
   for(i = 1; i < xlength+1; i++) {
     for(j = 1; j < xlength+1; j++) {
       for(k = 1; k < xlength+1; k++) {
-        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(xlength, i,j,k)]);
+        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(xlength, i,j,k)].flag);
       }
     }
   }

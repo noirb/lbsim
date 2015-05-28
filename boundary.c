@@ -8,7 +8,7 @@
 //macro for the calculation of the impact from the moving wall for treating moving wall boundary
 #define WALL(density, i, wallVelocity) (2*LATTICEWEIGHTS[(i)]*(density)*(dot2(LATTICEVELOCITIES[(i)], wallVelocity) / ((C_S*C_S) )))
 
-void treatBoundary(double *collideField, int* flagField, const double * const wallVelocity, int xlength){
+void treatBoundary(double *collideField, flag_data* flagField, const double * const wallVelocity, int xlength){
   //loop over the boundaries
 
     int flag;
@@ -26,14 +26,14 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
 
 
     // Inner cells. Needed only in case there are some boundary cells inside the fluid. 
-	// For the simple cavity case the inner conditionals are always false
+    // For the simple cavity case the inner conditionals are always false
     for (int i = 1; i <= xlength; i++)
     {
         for (int j = 1; j <= xlength; j++)
         {
             for(int k = 1; k <= xlength; k++)
             {
-                flag = flagField[FINDEXOF(xlength, i, j, k)];
+                flag = flagField[FINDEXOF(xlength, i, j, k)].flag;
                 if (flag == NO_SLIP)
                 {
                     for ( int l = 0; l < NUMBER_OF_LATTICE_DIRECTIONS; l++)
@@ -63,7 +63,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     {
         for (int j = 1; j <= xlength; j++)
         {
-            flag = flagField[FINDEXOF(xlength, i, j, 0)];
+            flag = flagField[FINDEXOF(xlength, i, j, 0)].flag;
             if (flag == NO_SLIP) //update 14, 15, 16, 17, 18
             {
                 for (int l = 0; l<N; l++)
@@ -81,7 +81,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
                 }
             }
 
-            flag = flagField[FINDEXOF(xlength, i, j, xlength+1)];
+            flag = flagField[FINDEXOF(xlength, i, j, xlength+1)].flag;
             if (flag == NO_SLIP) //update 0, 1, 2, 3, 4
             {
                 for (int l = 0; l < N; l++)
@@ -107,7 +107,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         for (int k = 1; k <= xlength; k++)
         {
             //0YZ
-            flag = flagField[FINDEXOF(xlength, 0, j, k)];
+            flag = flagField[FINDEXOF(xlength, 0, j, k)].flag;
             if (flag == NO_SLIP) //update 3, 7, 10, 13, 17
             {
                 for (int l = 0; l < N; l++)
@@ -126,7 +126,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
             }
 
             //NYZ
-            flag = flagField[FINDEXOF(xlength, xlength+1, j, k)];
+            flag = flagField[FINDEXOF(xlength, xlength+1, j, k)].flag;
             if (flag == NO_SLIP) //update 1, 5, 8, 11, 15
             {
                 for (int l = 0; l < N; l++)
@@ -152,7 +152,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         for (int k = 1; k <= xlength; k++)
         {
             //X0Z
-            flag = flagField[FINDEXOF(xlength, i, 0, k)];
+            flag = flagField[FINDEXOF(xlength, i, 0, k)].flag;
             if (flag == NO_SLIP) //update 4, 11, 12, 13, 18
             {
                 for (int l = 0; l < N; l++)
@@ -171,7 +171,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
             }
 
             //XNZ
-            flag = flagField[FINDEXOF(xlength, i, xlength+1, k)];
+            flag = flagField[FINDEXOF(xlength, i, xlength+1, k)].flag;
             if (flag == NO_SLIP) //update 0, 5, 7, 6, 14
             {
                 for (int l = 0; l < N; l++)
@@ -201,7 +201,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     for(int i = 1; i <= xlength; i++)
     {
         //(i, 0, 0)
-        flag = flagField[FINDEXOF(xlength, i, 0, 0)];
+        flag = flagField[FINDEXOF(xlength, i, 0, 0)].flag;
         if (flag == NO_SLIP) //update 18
         {
             collideField[INDEXOF(xlength, i, 0, 0, 18)] = FINV(xlength, i, 0, 0, 18);
@@ -214,7 +214,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(i, 0, xlength+1)
-        flag = flagField[FINDEXOF(xlength, i, 0, xlength+1)];
+        flag = flagField[FINDEXOF(xlength, i, 0, xlength+1)].flag;
         if (flag == NO_SLIP) //update 4
         {
             collideField[INDEXOF(xlength, i, 0, xlength+1, 4)] = FINV(xlength, i, 0, xlength+1, 4);
@@ -227,7 +227,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(i, xlength+1, 0)
-        flag = flagField[FINDEXOF(xlength, i, xlength+1, 0)];
+        flag = flagField[FINDEXOF(xlength, i, xlength+1, 0)].flag;
         if (flag == NO_SLIP) //update 14
         {
             collideField[INDEXOF(xlength, i, xlength+1, 0, 14)] = FINV(xlength, i, xlength+1, 0, 14);
@@ -240,7 +240,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(i, xlength+1, xlength+1)
-        flag = flagField[FINDEXOF(xlength, i, xlength+1, xlength+1)];
+        flag = flagField[FINDEXOF(xlength, i, xlength+1, xlength+1)].flag;
         if (flag == NO_SLIP) //update 0
         {
             collideField[INDEXOF(xlength, i, xlength+1, xlength+1, 0)] = FINV(xlength, i, xlength+1, xlength+1, 0);
@@ -258,7 +258,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     for(int j = 1; j <= xlength; j++)
     {
         //(0, j, 0)
-        flag = flagField[FINDEXOF(xlength, 0, j, 0)];
+        flag = flagField[FINDEXOF(xlength, 0, j, 0)].flag;
         if (flag == NO_SLIP) //update 17
         {
             collideField[INDEXOF(xlength, 0, j, 0, 17)] = FINV(xlength, 0, j, 0, 17);
@@ -271,7 +271,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(xlength+1, j, 0)
-        flag = flagField[FINDEXOF(xlength, xlength+1, j, 0)];
+        flag = flagField[FINDEXOF(xlength, xlength+1, j, 0)].flag;
         if (flag == NO_SLIP) //update 15
         {
             collideField[INDEXOF(xlength, xlength+1, j, 0, 15)] = FINV(xlength, xlength+1, j, 0, 15);
@@ -284,7 +284,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(0, j, xlength+1)
-        flag = flagField[FINDEXOF(xlength, 0, j, xlength+1)];
+        flag = flagField[FINDEXOF(xlength, 0, j, xlength+1)].flag;
         if (flag == NO_SLIP) //update 3
         {
             collideField[INDEXOF(xlength, 0, j, xlength+1, 3)] = FINV(xlength, 0, j, xlength+1, 3);
@@ -297,7 +297,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(xlength+1, j, xlength+1)
-        flag = flagField[FINDEXOF(xlength, xlength+1, j, xlength+1)];
+        flag = flagField[FINDEXOF(xlength, xlength+1, j, xlength+1)].flag;
         if (flag == NO_SLIP) //update 1
         {
             collideField[INDEXOF(xlength,xlength+1, j, xlength+1, 1)] = FINV(xlength, xlength+1, j, xlength+1, 1);
@@ -315,7 +315,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
     for(int k = 1; k <= xlength; k++)
     {
         //(0, 0, k)
-        flag = flagField[FINDEXOF(xlength, 0, 0, k)];
+        flag = flagField[FINDEXOF(xlength, 0, 0, k)].flag;
         if (flag == NO_SLIP) //update 13
         {
             collideField[INDEXOF(xlength, 0, 0, k, 13)] = FINV(xlength, 0, 0, k, 13);
@@ -328,7 +328,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(xlength+1, 0, k)
-        flag = flagField[FINDEXOF(xlength, xlength+1, 0, k)];
+        flag = flagField[FINDEXOF(xlength, xlength+1, 0, k)].flag;
         if (flag == NO_SLIP) //update 11
         {
             collideField[INDEXOF(xlength,xlength+1, 0, k, 11)] = FINV(xlength, xlength+1, 0, k, 11);
@@ -341,7 +341,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(0, xlength+1, k)
-        flag = flagField[FINDEXOF(xlength, 0, xlength+1, k)];
+        flag = flagField[FINDEXOF(xlength, 0, xlength+1, k)].flag;
         if (flag == NO_SLIP) //update 7
         {
             collideField[INDEXOF(xlength,0, xlength+1, k, 7)] = FINV(xlength, 0, xlength+1, k, 7);
@@ -354,7 +354,7 @@ void treatBoundary(double *collideField, int* flagField, const double * const wa
         }
 
         //(xlength+1, xlength+1, k)
-        flag = flagField[FINDEXOF(xlength, xlength+1, xlength+1, k)];
+        flag = flagField[FINDEXOF(xlength, xlength+1, xlength+1, k)].flag;
         if (flag == NO_SLIP) //update 5
         {
             collideField[INDEXOF(xlength,xlength+1, xlength+1, k, 5)] = FINV(xlength, xlength+1, xlength+1, k, 5);
