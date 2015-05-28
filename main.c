@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
     double    *collideField=NULL;
     double    *streamField=NULL;
     flag_data *flagField=NULL;
-    char cellDataFile[20];
+    char cellDataFile[80];
     int xlength;
     int ylength;
     int zlength;

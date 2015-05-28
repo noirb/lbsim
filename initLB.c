@@ -20,8 +20,8 @@ int readParameters(
     return -1;
   }
 
-  char cellDataFile[20];
-  char temp[40];
+  char cellDataFile[80];
+  char temp[80];
 
   READ_INT(argv[1],     *xlength);
   READ_INT(argv[1],     *ylength);
