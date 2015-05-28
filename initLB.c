@@ -170,7 +170,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
             flagField[FINDEXOF(xlength, cx, cy, cz)] = cf; // set that flag!
     }
   }
-  
+  fclose(cellData);
 }
 
 void setFlags(int *flagField, cell_flag flag, int xstart, int ystart, int zstart, int xlength, int ylength, int zlength, vary_flags varying)
