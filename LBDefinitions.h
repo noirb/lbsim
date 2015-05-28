@@ -58,7 +58,7 @@
 
   static const double C_S = 1.0 / 1.73205080757; // 1 / sqrt(3.0);
 
-  typedef enum { 
+  typedef enum {
         FLUID,
         NO_SLIP,
         MOVING_WALL,
@@ -67,6 +67,10 @@
         FREE_SLIP
         } cell_flag;
 
+  typedef struct {
+        cell_flag flag;
+        double* parameters;
+        } flag_data;
 
   /* ---------------------------------------- */
   /* macros simplify indexing into our arrays */

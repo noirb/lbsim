@@ -59,6 +59,7 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
 
   const char *pattern_singlecell = "\\((\\*|[0-9]+) (\\*|[0-9]+) (\\*|[0-9]+)\\) ([A-Z]+_*[A-Z]*) *(\\(([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+)\\))?";
   int reti;
+  double cellParms[3] = {0, 0, 0};
 
   if( (cellData = fopen(cellDataFile, "r")) == NULL)
   {
@@ -154,10 +155,38 @@ void initialiseFields(double *collideField, double *streamField, int *flagField,
                     {
                         cf = NO_SLIP;
                     }
+                    else if (strcmp(temp, "MOVING_WALL") == 0)
+                    {
+                        cf = MOVING_WALL;
+                    }
+                    else if (strcmp(temp, "IN_FLOW") == 0)
+                    {
+                        cf = IN_FLOW;
+                    }
+                    else if (strcmp(temp, "OUT_FLOW") == 0)
+                    {
+                        cf = OUT_FLOW;
+                    }
+                    else if (strcmp(temp, "FREE_SLIP") == 0)
+                    {
+                        cf = FREE_SLIP;
+                    }
                     else
                     {
                         cf = FLUID;
                     }
+                case 5: // contains all parameter groups
+                    continue;
+                    break;
+                case 6: // first parameter
+                    sscanf(temp, "%lf", cellParms);
+                    break;
+                case 7: // second parameter
+                    sscanf(temp, "%lf", cellParms+1);
+                    break;
+                case 8: // third parameter
+                    sscanf(temp, "%lf", cellParms+2);
+                    break;
                 default:
                     continue;
             }

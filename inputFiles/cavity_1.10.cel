@@ -9,4 +9,5 @@
 # individual cells can be manually filled by referencing specific coordinates
 (5 5 5) NO_SLIP
 
-# NOTE: any cell can be overwritten by a later instruction! 
+# NOTE: any cell can be overwritten by a later instruction!
+(5 5 5) MOVING_WALL (0.01 1.80 0.5)
