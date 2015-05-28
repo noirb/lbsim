@@ -77,12 +77,12 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
         // set distributions at (i,j,k)
         for (int l = 0; l < NUMBER_OF_LATTICE_DIRECTIONS; l++)
         {
-            collideField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
-            streamField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
+            collideField[INDEXOF(i, j, k, l)] = LATTICEWEIGHTS[l];
+            streamField[INDEXOF(i, j, k, l)] = LATTICEWEIGHTS[l];
         }
 
         // set flags at (i,j,k) to FLUID while we're here; obstacle & boundaries set below
-        flagField[FINDEXOF(xlength, i, j, k)].flag = FLUID;
+        flagField[FINDEXOF(i, j, k)].flag = FLUID;
       }
     }
   }
@@ -199,10 +199,10 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
         }
         else
         {
-            flagField[FINDEXOF(xlength, cx, cy, cz)].flag = cf; // set that flag!
-            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[0] = cellParms[0];
-            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[1] = cellParms[1];
-            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[2] = cellParms[2];
+            flagField[FINDEXOF(cx, cy, cz)].flag = cf; // set that flag!
+            flagField[FINDEXOF(cx, cy, cz)].parameters[0] = cellParms[0];
+            flagField[FINDEXOF(cx, cy, cz)].parameters[1] = cellParms[1];
+            flagField[FINDEXOF(cx, cy, cz)].parameters[2] = cellParms[2];
         }
     }
   }
@@ -236,10 +236,10 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
         {
             for (k = zstart; k <= max_k; k++)
             {
-                flagField[FINDEXOF(xlength, i, j, k)].flag = flag;
-                flagField[FINDEXOF(xlength, i, j, k)].parameters[0] = cell_parameters[0];
-                flagField[FINDEXOF(xlength, i, j, k)].parameters[1] = cell_parameters[1];
-                flagField[FINDEXOF(xlength, i, j, k)].parameters[2] = cell_parameters[2];
+                flagField[FINDEXOF(i, j, k)].flag = flag;
+                flagField[FINDEXOF(i, j, k)].parameters[0] = cell_parameters[0];
+                flagField[FINDEXOF(i, j, k)].parameters[1] = cell_parameters[1];
+                flagField[FINDEXOF(i, j, k)].parameters[2] = cell_parameters[2];
             }
         }
     }

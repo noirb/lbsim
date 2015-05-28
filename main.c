@@ -49,13 +49,13 @@ int main(int argc, char *argv[]){
     for(int t = 0; t < timesteps; t++)
     {
         double *swap=NULL;
-        doStreaming(collideField, streamField, flagField, xlength);
+        doStreaming(collideField, streamField, flagField, xlength, ylength, zlength);
         swap = collideField;
         collideField = streamField;
         streamField = swap;
 
-        doCollision(collideField, flagField, &tau, xlength);
-        treatBoundary(collideField,flagField,velocityWall,xlength);
+        doCollision(collideField, flagField, &tau, xlength, ylength, zlength);
+        treatBoundary(collideField, flagField, velocityWall, xlength, ylength, zlength);
 
         if (t%timestepsPerPlotting==0)
         {

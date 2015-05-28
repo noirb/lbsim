@@ -77,20 +77,20 @@
   /* ---------------------------------------- */
 
   // used for collide & stream fields to get a distribution at x,y,z,i
-  #define INDEXOF(xlength, x, y, z, i) __extension__({ \
-                                                       int index = _INDEXOF_((xlength), (x), (y), (z), (i)); \
-                                                       assert(index >= 0); assert(index < NUMBER_OF_LATTICE_DIRECTIONS * pow(xlength+2, NUMBER_OF_COORDINATES)); \
-                                                       index; \
-                                                     })
-  #define _INDEXOF_(xlength, x, y, z, i) (19 * ((z) * (xlength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
+  #define INDEXOF(x, y, z, i) __extension__({ \
+                                               int index = _INDEXOF_((x), (y), (z), (i)); \
+                                               assert(index >= 0); assert(index < NUMBER_OF_LATTICE_DIRECTIONS * ((xlength)+2)*((ylength)+2)*((zlength)+2)); \
+                                               index; \
+                                            })
+  #define _INDEXOF_(x, y, z, i) (19 * ((z) * (zlength+2) * (ylength+2) + (y) * (xlength+2) + (x)) + (i))
 
   // used for flag field to get flag at x,y,z
-  #define FINDEXOF(xlength, x, y, z) __extension__({ \
-                                                     int index = _FINDEXOF_((xlength), (x), (y), (z)); \
-                                                     assert(index >= 0); assert(index < pow(xlength+2, NUMBER_OF_COORDINATES)); \
-                                                     index; \
-                                                     })
-  #define _FINDEXOF_(xlength, x, y, z) ((z) * (xlength+2) * (xlength+2) + (y) * (xlength+2) + (x))
+  #define FINDEXOF(x, y, z) __extension__({ \
+                                             int index = _FINDEXOF_((x), (y), (z)); \
+                                             assert(index >= 0); assert(index < ((xlength)+2)*((ylength)+2)*((zlength)+2)); \
+                                             index; \
+                                           })
+  #define _FINDEXOF_(x, y, z) ((z) * (zlength+2) * (ylength+2) + (y) * (xlength+2) + (x))
 
 #endif
 

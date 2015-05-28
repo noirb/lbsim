@@ -33,8 +33,8 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   for(i = 1; i < xlength+1; i++) {
     for(j = 1; j < xlength+1; j++) {
       for(k = 1; k < xlength+1; k++) {
-        computeDensity(&collideField[INDEXOF(xlength, i,j,k,0)], &densities[FINDEXOF(xlength, i,j,k)]);
-        fprintf(fp, "%f\n", densities[FINDEXOF(xlength, i,j,k)] );
+        computeDensity(&collideField[INDEXOF(i,j,k,0)], &densities[FINDEXOF(i,j,k)]);
+        fprintf(fp, "%f\n", densities[FINDEXOF(i,j,k)] );
       }
     }
   }
@@ -46,7 +46,7 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   for(i = 1; i < xlength+1; i++) {
     for(j = 1; j < xlength+1; j++) {
       for(k = 1; k < xlength+1; k++) {
-        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(xlength, i,j,k)].flag);
+        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(i,j,k)].flag);
       }
     }
   }
@@ -58,7 +58,7 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
     for(j = 1; j < xlength+1; j++) {
       for(k = 1; k < xlength+1; k++) {
         double velocity[3];
-        computeVelocity(&collideField[INDEXOF(xlength, i,j,k,0)], densities+FINDEXOF(xlength, i, j, k), velocity);
+        computeVelocity(&collideField[INDEXOF(i,j,k,0)], densities+FINDEXOF(i, j, k), velocity);
         fprintf(fp, "%f %f %f\n", velocity[0], velocity[1], velocity[2]);
       }
     }
