@@ -7,7 +7,6 @@ int readParameters(
                     int     *ylength,
                     int     *zlength,
                     double  *tau,
-                    double  *velocityWall,
                     int     *timesteps,
                     int     *timestepsPerPlotting,
                     char    *cellDataPath,
@@ -21,7 +20,6 @@ int readParameters(
     return -1;
   }
 
-  double velocityWallX, velocityWallY, velocityWallZ;
   char cellDataFile[20];
   char temp[40];
 
@@ -29,16 +27,9 @@ int readParameters(
   READ_INT(argv[1],     *ylength);
   READ_INT(argv[1],     *zlength);
   READ_DOUBLE(argv[1],  *tau);
-  READ_DOUBLE(argv[1],  velocityWallX);
-  READ_DOUBLE(argv[1],  velocityWallY);
-  READ_DOUBLE(argv[1],  velocityWallZ);
   READ_INT(argv[1],     *timesteps);
   READ_INT(argv[1],     *timestepsPerPlotting);
   READ_STRING(argv[1],  cellDataFile);
-
-  velocityWall[0] = velocityWallX;
-  velocityWall[1] = velocityWallY;
-  velocityWall[2] = velocityWallZ;
 
   strcpy(temp, argv[1]); // make temporary copy of file path in case dirname modifies the source...
   char *inputFileDir = dirname(temp);
@@ -200,9 +191,9 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
         else
         {
             flagField[FINDEXOF(cx, cy, cz)].flag = cf; // set that flag!
-            flagField[FINDEXOF(cx, cy, cz)].parameters[0] = cellParms[0];
-            flagField[FINDEXOF(cx, cy, cz)].parameters[1] = cellParms[1];
-            flagField[FINDEXOF(cx, cy, cz)].parameters[2] = cellParms[2];
+            flagField[FINDEXOF(cx, cy, cz)].parms[0] = cellParms[0];
+            flagField[FINDEXOF(cx, cy, cz)].parms[1] = cellParms[1];
+            flagField[FINDEXOF(cx, cy, cz)].parms[2] = cellParms[2];
         }
     }
   }
@@ -237,9 +228,9 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
             for (k = zstart; k <= max_k; k++)
             {
                 flagField[FINDEXOF(i, j, k)].flag = flag;
-                flagField[FINDEXOF(i, j, k)].parameters[0] = cell_parameters[0];
-                flagField[FINDEXOF(i, j, k)].parameters[1] = cell_parameters[1];
-                flagField[FINDEXOF(i, j, k)].parameters[2] = cell_parameters[2];
+                flagField[FINDEXOF(i, j, k)].parms[0] = cell_parameters[0];
+                flagField[FINDEXOF(i, j, k)].parms[1] = cell_parameters[1];
+                flagField[FINDEXOF(i, j, k)].parms[2] = cell_parameters[2];
             }
         }
     }

@@ -4,7 +4,7 @@
 #include "LBDefinitions.h"
 
 /** handles the boundaries in our simulation setup */
-void treatBoundary(double *collideField, flag_data* flagField, const double * const wallVelocity, int xlength, int ylength, int zlength);
+void treatBoundary(double *collideField, flag_data* flagField, int xlength, int ylength, int zlength);
 
 #endif
 

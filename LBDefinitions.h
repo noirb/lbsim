@@ -69,7 +69,7 @@
 
   typedef struct {
         cell_flag flag;
-        double parameters[3]; // TODO: we may want to dynamically allocate this since it's not used for most cells
+        double parms[3]; // TODO: we may want to dynamically allocate this since it's not used for most cells
         } flag_data;
 
   /* ---------------------------------------- */

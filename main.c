@@ -17,11 +17,10 @@ int main(int argc, char *argv[]){
     int zlength;
     int totalElements;
     double tau;
-    double velocityWall[3];
     int timesteps;
     int timestepsPerPlotting;
 
-    if (readParameters(&xlength, &ylength, &zlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, cellDataFile, argc, argv) == -1)
+    if (readParameters(&xlength, &ylength, &zlength, &tau, &timesteps, &timestepsPerPlotting, cellDataFile, argc, argv) == -1)
     {
         fprintf(stderr, "Error reading parameter file: %s\n", argv[1]);
         return 0; // exit if readParameters returned an error
@@ -55,7 +54,7 @@ int main(int argc, char *argv[]){
         streamField = swap;
 
         doCollision(collideField, flagField, &tau, xlength, ylength, zlength);
-        treatBoundary(collideField, flagField, velocityWall, xlength, ylength, zlength);
+        treatBoundary(collideField, flagField, xlength, ylength, zlength);
 
         if (t%timestepsPerPlotting==0)
         {

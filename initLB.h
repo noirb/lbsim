@@ -17,7 +17,6 @@ int readParameters(
     int *ylength,                       /* reads domain's y-dimension. Parameter name: "ylength" */
     int *zlength,                       /* reads domain's z-dimension. Parameter name: "zlength" */
     double *tau,                        /* relaxation parameter tau. Parameter name: "tau" */
-    double *velocityWall,               /* velocity of the lid. Parameter name: "characteristicvelocity" */
     int *timesteps,                     /* number of timesteps. Parameter name: "timesteps" */
     int *timestepsPerPlotting,          /* timesteps between subsequent VTK plots. Parameter name: "vtkoutput" */
     char *cellDataPath,                 /* path to file containing cell descriptions. Parameter name: "cellDataPath" */
