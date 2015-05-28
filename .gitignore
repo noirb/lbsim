@@ -35,4 +35,5 @@
 *.vtk
 *.project
 *.cproject
+lbsim*
 *dump
