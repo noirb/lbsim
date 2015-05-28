@@ -82,7 +82,7 @@
                                                assert(index >= 0); assert(index < NUMBER_OF_LATTICE_DIRECTIONS * ((xlength)+2)*((ylength)+2)*((zlength)+2)); \
                                                index; \
                                             })
-  #define _INDEXOF_(x, y, z, i) (19 * ((z) * (zlength+2) * (ylength+2) + (y) * (xlength+2) + (x)) + (i))
+  #define _INDEXOF_(x, y, z, i) (19 * ((z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
 
   // used for flag field to get flag at x,y,z
   #define FINDEXOF(x, y, z) __extension__({ \
@@ -90,7 +90,7 @@
                                              assert(index >= 0); assert(index < ((xlength)+2)*((ylength)+2)*((zlength)+2)); \
                                              index; \
                                            })
-  #define _FINDEXOF_(x, y, z) ((z) * (zlength+2) * (ylength+2) + (y) * (xlength+2) + (x))
+  #define _FINDEXOF_(x, y, z) ( (z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x) )
 
 #endif
 
