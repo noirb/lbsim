@@ -312,7 +312,7 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
 
 
     //Z-edges
-    for(int k = 1; k <= ylength; k++)
+    for(int k = 1; k <= zlength; k++)
     {
         //(0, 0, k)
         flag = flagField[FINDEXOF(0, 0, k)].flag;
