@@ -1,0 +1,12 @@
+# Regions can be filled with the specified flag using the * wildcard (to speciy all coordinates along that axis be used)
+
+(* 2 2) NO_SLIP
+(2 * 2) NO_SLIP
+(2 2 *) NO_SLIP
+
+(* 6 *) NO_SLIP
+
+# individual cells can be manually filled by referencing specific coordinates
+(5 5 5) NO_SLIP
+
+# NOTE: any cell can be overwritten by a later instruction! 

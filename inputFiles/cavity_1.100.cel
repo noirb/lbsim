@@ -1,5 +1,6 @@
 # TODO: outer walls can be auto-filled with the same flag
 
+(0, 0, *) NO_SLIP
 
 # individual cells can be manually filled by referencing specific coordinates
 (5 5 5) NO_SLIP (10 10 10.7)

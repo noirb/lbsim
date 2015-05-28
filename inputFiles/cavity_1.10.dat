@@ -12,4 +12,4 @@ timesteps    100
 
 timestepsPerPlotting 10
 
-cellDataFile cavity_1.100.cel
+cellDataFile cavity_1.10.cel

@@ -3,6 +3,13 @@
 #include "helper.h"
 #include "LBDefinitions.h"
 
+// used for initializing flags array
+typedef enum { 
+    VARY_NONE = 0x0,
+    VARY_X = 0x1,
+    VARY_Y = 0x2,
+    VARY_Z = 0x4
+    } vary_flags;
 
 /* reads the parameters for the lid driven cavity scenario from a config file */
 int readParameters(
@@ -21,6 +28,9 @@ int readParameters(
 
 /* initialises the particle distribution functions and the flagfield */
 void initialiseFields(double *collideField, double *streamField,int *flagField, int xlength, int ylength, int zlength, char* cellDataFile);
+
+// sets a region of the flagField to a specific value
+void setFlags(int *flagField, cell_flag flag, int xstart, int ystart, int zstart, int xlength, int ylength, int zlength, vary_flags varying);
 
 #endif
 
