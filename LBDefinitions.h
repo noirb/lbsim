@@ -80,7 +80,6 @@
   // used for collide & stream fields to get a distribution at x,y,z,i
   #define INDEXOF(x, y, z, i) __extension__({ \
                                                int index = _INDEXOF_((x), (y), (z), (i)); \
-                                               assert(index >= 0); assert(index < NUMBER_OF_LATTICE_DIRECTIONS * ((xlength)+2)*((ylength)+2)*((zlength)+2)); \
                                                index; \
                                             })
   #define _INDEXOF_(x, y, z, i) (19 * ((z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
@@ -88,7 +87,6 @@
   // used for flag field to get flag at x,y,z
   #define FINDEXOF(x, y, z) __extension__({ \
                                              int index = _FINDEXOF_((x), (y), (z)); \
-                                             assert(index >= 0); assert(index < ((xlength)+2)*((ylength)+2)*((zlength)+2)); \
                                              index; \
                                            })
   #define _FINDEXOF_(x, y, z) ( (z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x) )
