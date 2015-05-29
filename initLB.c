@@ -49,7 +49,7 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
   regmatch_t pmatch[10];
   vary_flags wildCardFlags = VARY_NONE;
 
-  const char *pattern_singlecell = "\\((\\*|[nN]|[0-9]+) +(\\*|[nN]|[0-9]+) +(\\*|[nN]|[0-9]+)\\) +([A-Z]+_*[A-Z]*) *(\\(([0-9]+\\.[0-9]+|[0-9]+) *([0-9]+\\.[0-9]+|[0-9]+)? *([0-9]+\\.[0-9]+|[0-9]+)?\\))?";
+  const char *pattern_singlecell = "\\((\\*|[nN]|[0-9]+) +(\\*|[nN]|[0-9]+) +(\\*|[nN]|[0-9]+)\\) +([A-Z]+_*[A-Z]*) *(\\((-?[0-9]+\\.[0-9]+|-?[0-9]+) *(-?[0-9]+\\.[0-9]+|-?[0-9]+)? *(-?[0-9]+\\.[0-9]+|-?[0-9]+)?\\))?";
   int reti;
   double cellParms[3] = {0, 0, 0};
 

@@ -2,7 +2,7 @@
 # Additionally, the maximal index in a dimension can be specified with N, so these regions can scale with the problem size
 
 # top boundary as moving_wall
-(* N *) MOVING_WALL (0.01 0 0)
+(* N *) MOVING_WALL (-0.01 0 0)
 
 # all other walls as no_slip -- 11 here is our maximal index
 (0 * *) NO_SLIP
