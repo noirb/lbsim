@@ -102,9 +102,8 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
             int len = pmatch[i].rm_eo - pmatch[i].rm_so;
             strncpy(temp, line + pmatch[i].rm_so, len);
             temp[len] = 0; // null-terminate resulting string
-            printf("\t\tMatch %d: '%s'\n", i, temp);
-            
-            switch(i)                                   /// TODO: Don't do this
+
+            switch(i)
             {
                 case 0:
                     continue;
@@ -235,8 +234,6 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
     {
         max_k = zlength + 1;
     }
-
-    printf("\t\tSetting wild flags: %d\n\t\t\t x: %d -> %d\n\t\t\t y: %d -> %d\n\t\t\t z: %d -> %d\n", varying, i, max_i, j, max_j, k, max_k);
 
     for (i = xstart; i <= max_i; i++)
     {
