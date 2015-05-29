@@ -163,17 +163,21 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     {
                         cf = MOVING_WALL;
                     }
-                    else if (strcmp(temp, "IN_FLOW") == 0)
+                    else if (strcmp(temp, "INFLOW") == 0)
                     {
-                        cf = IN_FLOW;
+                        cf = INFLOW;
                     }
-                    else if (strcmp(temp, "OUT_FLOW") == 0)
+                    else if (strcmp(temp, "OUTFLOW") == 0)
                     {
-                        cf = OUT_FLOW;
+                        cf = OUTFLOW;
                     }
                     else if (strcmp(temp, "FREE_SLIP") == 0)
                     {
                         cf = FREE_SLIP;
+                    }
+                    else if (strcmp(temp, "PRESSURE_IN") == 0)
+                    {
+                        cf = PRESSURE_IN;
                     }
                     else
                     {

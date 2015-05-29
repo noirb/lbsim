@@ -62,9 +62,10 @@
         FLUID,
         NO_SLIP,
         MOVING_WALL,
-        IN_FLOW,
-        OUT_FLOW,
-        FREE_SLIP
+        INFLOW,
+        OUTFLOW,
+        FREE_SLIP,
+        PRESSURE_IN
         } cell_flag;
 
   typedef struct {
