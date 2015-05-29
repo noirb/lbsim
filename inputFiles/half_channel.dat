@@ -1,0 +1,11 @@
+xlength		40
+ylength		10
+zlength		10
+
+tau         1.5
+
+timesteps    100
+
+timestepsPerPlotting 1
+
+cellDataFile half_channel.cel

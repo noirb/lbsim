@@ -1,0 +1,14 @@
+# Regions can be filled with the specified flag using the * wildcard (to speciy all coordinates along that axis be used)
+# Additionally, the maximal index in a dimension can be specified with N, so these regions can scale with the problem size
+
+ # INFLOW along west face
+(0 * *) INFLOW (0.01 0 0)
+# FREE_SLIP along top surface
+(* N *) FREE_SLIP
+# OUTFLOW along east face
+(N * *) OUTFLOW
+
+# all other walls as no_slip
+(* 0 *) NO_SLIP
+(* * 0) NO_SLIP
+(* * n) NO_SLIP
