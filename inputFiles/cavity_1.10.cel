@@ -12,7 +12,7 @@
 (N * *) NO_SLIP
 
 # individual cells can be manually filled by referencing specific coordinates
-#(5 5 5) NO_SLIP
+(5 5 5) IN_FLOW (20 10)
 
 # NOTE: any cell can be overwritten by a later instruction!
 #(5 5 5) MOVING_WALL (0.01 1.80 0.5)
