@@ -1,14 +1,15 @@
 # Regions can be filled with the specified flag using the * wildcard (to speciy all coordinates along that axis be used)
+# Additionally, the maximal index in a dimension can be specified with N, so these regions can scale with the problem size
 
 # top boundary as moving_wall
-(* 31 *) MOVING_WALL (0.01 0 0)
+(* N *) MOVING_WALL (0.01 0 0)
 
 # all other walls as no_slip -- 11 here is our maximal index
 (0 * *) NO_SLIP
 (* 0 *) NO_SLIP
 (* * 0) NO_SLIP
-(* * 21) NO_SLIP
-(31 * *) NO_SLIP
+(* * n) NO_SLIP
+(N * *) NO_SLIP
 
 # individual cells can be manually filled by referencing specific coordinates
 #(5 5 5) NO_SLIP

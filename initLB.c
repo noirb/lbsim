@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <regex.h>
 #include <libgen.h>
 #include "initLB.h"
@@ -48,7 +49,7 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
   regmatch_t pmatch[10];
   vary_flags wildCardFlags = VARY_NONE;
 
-  const char *pattern_singlecell = "\\((\\*|[0-9]+) (\\*|[0-9]+) (\\*|[0-9]+)\\) ([A-Z]+_*[A-Z]*) *(\\(([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+)\\))?";
+  const char *pattern_singlecell = "\\((\\*|[nN]|[0-9]+) (\\*|[nN]|[0-9]+) (\\*|[nN]|[0-9]+)\\) ([A-Z]+_*[A-Z]*) *(\\(([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+)\\))?";
   int reti;
   double cellParms[3] = {0, 0, 0};
 
@@ -109,10 +110,14 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     continue;
                     break;
                 case 1:
-                    if (strcmp(temp, "*") == 0)
+                    if (temp[0] == '*')
                     {
                         wildCardFlags |= VARY_X;
                         cx = 0;
+                    }
+                    else if (toupper((int)temp[0]) == 'N')
+                    {
+                        cx = xlength+1;
                     }
                     else
                     {
@@ -120,10 +125,14 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     }
                     break;
                 case 2:
-                    if (strcmp(temp, "*") == 0)
+                    if (temp[0] == '*')
                     {
                         wildCardFlags |= VARY_Y;
                         cy = 0;
+                    }
+                    else if (toupper((int)temp[0]) == 'N')
+                    {
+                        cy = ylength+1;
                     }
                     else
                     {
@@ -131,10 +140,14 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     }
                     break;
                 case 3:
-                    if (strcmp(temp, "*") == 0)
+                    if (temp[0] == '*')
                     {
                         wildCardFlags |= VARY_Z;
                         cz = 0;
+                    }
+                    else if (toupper((int)temp[0]) == 'N')
+                    {
+                        cz = zlength+1;
                     }
                     else
                     {
