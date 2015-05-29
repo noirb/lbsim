@@ -2,7 +2,7 @@
 # Additionally, the maximal index in a dimension can be specified with N, so these regions can scale with the problem size
 
 # top boundary as moving_wall
-(* N *) MOVING_WALL (-0.01 0 0)
+(* N *) MOVING_WALL (0.01 0 0)
 
 # all other walls as no_slip -- 11 here is our maximal index
 (0 * *) NO_SLIP
@@ -12,7 +12,7 @@
 (N * *) NO_SLIP
 
 # individual cells can be manually filled by referencing specific coordinates
-(5 5 5) IN_FLOW (20 10)
+#(5 5 5) IN_FLOW (20 10)
 
 # NOTE: any cell can be overwritten by a later instruction!
 #(5 5 5) MOVING_WALL (0.01 1.80 0.5)

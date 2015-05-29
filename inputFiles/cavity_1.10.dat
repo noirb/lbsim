@@ -1,6 +1,6 @@
-xlength		30
-ylength		30
-zlength		20
+xlength		10
+ylength		10
+zlength		10
 
 tau         1.5
 
