@@ -38,19 +38,32 @@
                                 "PRESSURE_IN" : 0x00ffff
                               }
                 this.materials = {}
-                
+
+                this.xlength = 10;
+                this.ylength = 10;
+                this.zlength = 10;
+
                 this.parm1 = 0.0;
                 this.parm2 = 0.0;
                 this.parm3 = 0.0;
-                
+
+                // global flags for each exterior wall
+                this.Xmin = 'NO_SLIP';
+                this.Xmax = 'NO_SLIP';
+                this.Ymin = 'NO_SLIP';
+                this.Ymax = 'NO_SLIP';
+                this.Zmin = 'NO_SLIP';
+                this.Zmax = 'NO_SLIP';
+
+                this.cellWidth = 50;
                 this.export = function () {}
             }
 
             var guiMgr = new GuiManager();
-
+            var brushFlags = [ 'NO_SLIP', 'FREE_SLIP', 'INFLOW', 'OUTFLOW', 'PRESSURE_IN' ];
 			var container;
 			var camera, scene, renderer;
-			var plane, cube;
+			var plane, grid, cube;
 			var mouse, raycaster, isShiftDown = false;
 
 			var rollOverMesh, rollOverMaterial;
@@ -69,7 +82,18 @@
                 // set up GUI
                 var gui = new dat.GUI();
                 gui.add(guiMgr, 'name');
-                gui.add(guiMgr, 'BrushFlag', [ 'NO_SLIP', 'FREE_SLIP', 'INFLOW', 'OUTFLOW', 'PRESSURE_IN' ]);
+                var domainFolder = gui.addFolder('Domain Settings');
+                domainFolder.add(guiMgr, 'xlength');
+                domainFolder.add(guiMgr, 'ylength');
+                domainFolder.add(guiMgr, 'zlength');
+                var wallFolder = gui.addFolder('Wall Settings');
+                wallFolder.add(guiMgr, 'Xmin', brushFlags);
+                wallFolder.add(guiMgr, 'Xmax', brushFlags);
+                wallFolder.add(guiMgr, 'Ymin', brushFlags);
+                wallFolder.add(guiMgr, 'Ymax', brushFlags);
+                wallFolder.add(guiMgr, 'Zmin', brushFlags);
+                wallFolder.add(guiMgr, 'Zmax', brushFlags);
+                gui.add(guiMgr, 'BrushFlag', brushFlags);
                 var parmFolder = gui.addFolder('Cell Parameters');
                 parmFolder.add(guiMgr, 'parm1');
                 parmFolder.add(guiMgr, 'parm2');
@@ -95,14 +119,14 @@
 
 				// roll-over helpers
 
-				rollOverGeo = new THREE.BoxGeometry( 50, 50, 50 );
+				rollOverGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
 				rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
 				rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
 				scene.add( rollOverMesh );
 
 				// cubes
 
-				cubeGeo = new THREE.BoxGeometry( 50, 50, 50 );
+				cubeGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
 				guiMgr.materials['NO_SLIP']     = new THREE.MeshLambertMaterial( { color: guiMgr.colors['NO_SLIP'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
                 guiMgr.materials['FREE_SLIP']   = new THREE.MeshLambertMaterial( { color: guiMgr.colors['FREE_SLIP'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
                 guiMgr.materials['INFLOW']      = new THREE.MeshLambertMaterial( { color: guiMgr.colors['INFLOW'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
@@ -111,35 +135,22 @@
 
 				// grid
 
-				var size = 500, step = 50;
-
-				var geometry = new THREE.Geometry();
-
-				for ( var i = - size; i <= size; i += step ) {
-
-					geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-					geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-
-					geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-					geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-
-				}
-
-				var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2, transparent: true } );
-
-				var line = new THREE.Line( geometry, material, THREE.LinePieces );
-				scene.add( line );
+				grid = new THREE.Mesh( new THREE.PlaneGeometry( guiMgr.xlength*guiMgr.cellWidth, guiMgr.zlength*guiMgr.cellWidth, guiMgr.xlength, guiMgr.zlength ), new THREE.MeshBasicMaterial( { color: 0x555555, wireframe: true } ) );
+				grid.rotation.x = - 90 * Math.PI / 180;
+                grid.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+				scene.add( grid );
 
 				//
 
 				raycaster = new THREE.Raycaster();
 				mouse = new THREE.Vector2();
 
-				var geometry = new THREE.PlaneBufferGeometry( 1000, 1000 );
+				var geometry = new THREE.PlaneBufferGeometry( guiMgr.cellWidth * guiMgr.xlength, guiMgr.cellWidth * guiMgr.zlength );
 				geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
 				plane = new THREE.Mesh( geometry );
 				plane.visible = false;
+                plane.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
 				scene.add( plane );
 
 				objects.push( plane );
@@ -239,7 +250,7 @@
 						voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                         voxel.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
                         voxel.flag = guiMgr.BrushFlag;
-
+                        console.log(voxel.position);
 						scene.add( voxel );
 
 						objects.push( voxel );
