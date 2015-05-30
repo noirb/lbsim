@@ -35,7 +35,8 @@
                                 "FREE_SLIP"   : 0x0000ff,
                                 "INFLOW"      : 0xff0000,
                                 "OUTFLOW"     : 0xffff00,
-                                "PRESSURE_IN" : 0x00ffff
+                                "PRESSURE_IN" : 0x00ffff,
+                                "MOVING_WALL" : 0xff00ff
                               }
                 this.materials = {}
 
@@ -56,11 +57,11 @@
                 this.Zmax = 'NO_SLIP';
 
                 this.cellWidth = 50;
-                this.export = function () {}
+                this.export = function () { ExportData(); }
             }
 
             var guiMgr = new GuiManager();
-            var brushFlags = [ 'NO_SLIP', 'FREE_SLIP', 'INFLOW', 'OUTFLOW', 'PRESSURE_IN' ];
+            var brushFlags = [ 'NO_SLIP', 'FREE_SLIP', 'INFLOW', 'OUTFLOW', 'PRESSURE_IN', 'MOVING_WALL' ];
 			var container;
 			var camera, scene, renderer;
 			var plane, grid, cube;
@@ -76,7 +77,53 @@
 			init();
 			render();
 
-            
+            function ExportData()
+            {
+                var children	= scene.children;
+                var voxels	= [];
+
+                for( var i = 0; i < children.length; i++ ) {
+                    var child = children[i];
+
+                    if( child instanceof THREE.Mesh === false ) continue;
+                    if( child.geometry instanceof THREE.BoxGeometry === false ) continue;
+                    if( child === rollOverMesh ) continue;
+
+                    voxels.push({
+                        x     : (child.position.x - 25) / guiMgr.cellWidth,
+                        y     : (child.position.y - 25) / guiMgr.cellWidth,
+                        z     : (child.position.z - 25) / guiMgr.cellWidth,
+                        f     : child.userData.flag,
+                        parms : child.userData.parms
+                    });
+                }
+
+                // open a window with the output-- must use base64 to preserve newline characters!
+                var dataUri = "data:text/plain;charset=utf-8;base64,";
+                var expData = "";
+                console.log('Exporting ' + voxels.length + ' voxels');
+                for ( var i = 0; i < voxels.length; i++)
+                {
+                    expData += "(" + voxels[i].x + " " + voxels[i].y + " " + voxels[i].z + ") " + voxels[i].f;
+                    if (voxels[i].parms.length > 0)
+                    {
+                        expData += " (";
+                        for ( var p = 0; p < voxels[i].parms.length; p++ )
+                        {
+                            expData += voxels[i].parms[p];
+
+                            if ( p < voxels[i].parms.length - 1) // only add a space if this not the last parameter
+                            {
+                                expData += " ";
+                            }
+                        }
+                        expData += ")";
+                    }
+                    expData += "\n";
+                }
+                dataUri += btoa(expData);
+                window.open( dataUri, 'mywindow' );
+            }
 
 			function init() {
                 // set up GUI
@@ -132,6 +179,7 @@
                 guiMgr.materials['INFLOW']      = new THREE.MeshLambertMaterial( { color: guiMgr.colors['INFLOW'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
                 guiMgr.materials['OUTFLOW']     = new THREE.MeshLambertMaterial( { color: guiMgr.colors['OUTFLOW'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
                 guiMgr.materials['PRESSURE_IN'] = new THREE.MeshLambertMaterial( { color: guiMgr.colors['PRESSURE_IN'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
+                guiMgr.materials['MOVING_WALL'] = new THREE.MeshLambertMaterial( { color: guiMgr.colors['MOVING_WALL'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
 
 				// grid
 
@@ -241,19 +289,37 @@
 
 						}
 
-					// create cube
+                    // create cube
 
-					} else {
+                    } else {
 
-						var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[guiMgr.BrushFlag] );
-						voxel.position.copy( intersect.point ).add( intersect.face.normal );
-						voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                        var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[guiMgr.BrushFlag] );
+                        voxel.position.copy( intersect.point ).add( intersect.face.normal );
+                        voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                         voxel.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
-                        voxel.flag = guiMgr.BrushFlag;
-                        console.log(voxel.position);
-						scene.add( voxel );
 
-						objects.push( voxel );
+                        // store cell data for later export
+                        voxel.userData.flag = guiMgr.BrushFlag;     // FLAG
+                        
+                        // only store parameter data for flags that require it
+                        switch (guiMgr.BrushFlag)
+                        {
+                            case 'MOVING_WALL':
+                                voxel.userData.parms = [guiMgr.parm1, guiMgr.parm2, guiMgr.parm3];
+                                break;
+                            case 'INFLOW':
+                                voxel.userData.parms = [guiMgr.parm1, guiMgr.parm2, guiMgr.parm3];
+                                break;
+                            case 'PRESSURE_IN':
+                                voxel.userData.parms = [guiMgr.parm1];
+                                break;
+                            default:
+                                voxel.userData.parms = [];
+                                break;
+                        }
+
+                        scene.add( voxel );
+                        objects.push( voxel );
 
 					}
 
