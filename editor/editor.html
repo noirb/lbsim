@@ -106,9 +106,9 @@
                     if( child === rollOverMesh ) continue;
 
                     voxels.push({
-                        x     : (child.position.x - 25) / guiMgr.cellWidth,
-                        y     : (child.position.y - 25) / guiMgr.cellWidth,
-                        z     : (child.position.z - 25) / guiMgr.cellWidth,
+                        x     : 1 + (child.position.x - 25) / guiMgr.cellWidth,
+                        y     : 1 + (child.position.y - 25) / guiMgr.cellWidth,
+                        z     : 1 + (child.position.z - 25) / guiMgr.cellWidth,
                         f     : child.userData.flag,
                         parms : child.userData.parms
                     });
@@ -442,6 +442,10 @@
                         voxel.position.copy( intersect.point ).add( intersect.face.normal );
                         voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                         voxel.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
+
+                        // don't actually add voxel if it's outside our domain in the vertical direction
+                        if ((voxel.position.y - 25) / guiMgr.cellWidth >= guiMgr.ylength)
+                            return;
 
                         // store cell data for later export
                         voxel.userData.flag = guiMgr.BrushFlag;     // FLAG
