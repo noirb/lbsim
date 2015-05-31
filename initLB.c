@@ -160,6 +160,11 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                             fprintf(stderr, "\t\tERROR: Line %d :: Found MOVING_WALL cell without any velocity parameters!\n\t\t >> %s\n", nline, line);
                             return -1;
                         }
+                        else if (pmatch[8].rm_so == -1)
+                        {
+                            fprintf(stderr, "\t\tERROR: Line %d :: Found MOVING_WALL cell with incorrect number of velocity parameters!\n\t\t >> %s\n", nline, line);
+                            return -1;
+                        }
                     }
                     else if (strcmp(temp, "INFLOW") == 0)
                     {
@@ -168,6 +173,11 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                         if (pmatch[5].rm_so == -1)
                         {
                             fprintf(stderr, "\t\tERROR: Line %d :: Found INFLOW cell without any velocity parameters!\n\t\t >> %s\n", nline, line);
+                            return -1;
+                        }
+                        else if (pmatch[8].rm_so == -1)
+                        {
+                            fprintf(stderr, "\t\tERROR: Line %d :: Found INFLOW cell with incorrect number of velocity parameters!\n\t\t >> %s\n", nline, line);
                             return -1;
                         }
                     }
