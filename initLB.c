@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <regex.h>
 #include <libgen.h>
 #include "initLB.h"
@@ -7,10 +8,8 @@ int readParameters(
                     int     *ylength,
                     int     *zlength,
                     double  *tau,
-                    double  *velocityWall,
                     int     *timesteps,
                     int     *timestepsPerPlotting,
-                    char    *cellDataPath,
                     int     argc,
                     char    *argv[]
                     )
@@ -21,28 +20,12 @@ int readParameters(
     return -1;
   }
 
-  double velocityWallX, velocityWallY, velocityWallZ;
-  char cellDataFile[20];
-  char temp[40];
-
   READ_INT(argv[1],     *xlength);
   READ_INT(argv[1],     *ylength);
   READ_INT(argv[1],     *zlength);
   READ_DOUBLE(argv[1],  *tau);
-  READ_DOUBLE(argv[1],  velocityWallX);
-  READ_DOUBLE(argv[1],  velocityWallY);
-  READ_DOUBLE(argv[1],  velocityWallZ);
   READ_INT(argv[1],     *timesteps);
   READ_INT(argv[1],     *timestepsPerPlotting);
-  READ_STRING(argv[1],  cellDataFile);
-
-  velocityWall[0] = velocityWallX;
-  velocityWall[1] = velocityWallY;
-  velocityWall[2] = velocityWallZ;
-
-  strcpy(temp, argv[1]); // make temporary copy of file path in case dirname modifies the source...
-  char *inputFileDir = dirname(temp);
-  sprintf(cellDataPath, "%s/%s", inputFileDir, cellDataFile);
 
   return 0;
 }
@@ -57,7 +40,7 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
   regmatch_t pmatch[10];
   vary_flags wildCardFlags = VARY_NONE;
 
-  const char *pattern_singlecell = "\\((\\*|[0-9]+) (\\*|[0-9]+) (\\*|[0-9]+)\\) ([A-Z]+_*[A-Z]*) *(\\(([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+) ([0-9]+\\.[0-9]+|[0-9]+)\\))?";
+  const char *pattern_singlecell = "\\((\\*|[nN]|[0-9]+) +(\\*|[nN]|[0-9]+) +(\\*|[nN]|[0-9]+)\\) +([A-Z]+_*[A-Z]*) *(\\((-?[0-9]+\\.[0-9]+|-?[0-9]+) *(-?[0-9]+\\.[0-9]+|-?[0-9]+)? *(-?[0-9]+\\.[0-9]+|-?[0-9]+)?\\))?";
   int reti;
   double cellParms[3] = {0, 0, 0};
 
@@ -77,18 +60,18 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
         // set distributions at (i,j,k)
         for (int l = 0; l < NUMBER_OF_LATTICE_DIRECTIONS; l++)
         {
-            collideField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
-            streamField[INDEXOF(xlength, i, j, k, l)] = LATTICEWEIGHTS[l];
+            collideField[INDEXOF(i, j, k, l)] = LATTICEWEIGHTS[l];
+            streamField[INDEXOF(i, j, k, l)] = LATTICEWEIGHTS[l];
         }
 
         // set flags at (i,j,k) to FLUID while we're here; obstacle & boundaries set below
-        flagField[FINDEXOF(xlength, i, j, k)].flag = FLUID;
+        flagField[FINDEXOF(i, j, k)].flag = FLUID;
       }
     }
   }
 
   // read cell data file to set boundary & obstacle conditions
-  printf("\n\tParsing cell data file: %s\n", cellDataFile);
+  printf("\n\tParsing cell data from file: %s\n", cellDataFile);
   regcomp(&regex_single, pattern_singlecell, REG_EXTENDED);
 
   int cx, cy, cz, cf;
@@ -110,18 +93,21 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
             int len = pmatch[i].rm_eo - pmatch[i].rm_so;
             strncpy(temp, line + pmatch[i].rm_so, len);
             temp[len] = 0; // null-terminate resulting string
-            printf("\t\tMatch %d: '%s'\n", i, temp);
-            
-            switch(i)                                   /// TODO: Don't do this
+
+            switch(i)
             {
                 case 0:
                     continue;
                     break;
                 case 1:
-                    if (strcmp(temp, "*") == 0)
+                    if (temp[0] == '*')
                     {
                         wildCardFlags |= VARY_X;
                         cx = 0;
+                    }
+                    else if (toupper((int)temp[0]) == 'N')
+                    {
+                        cx = xlength+1;
                     }
                     else
                     {
@@ -129,10 +115,14 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     }
                     break;
                 case 2:
-                    if (strcmp(temp, "*") == 0)
+                    if (temp[0] == '*')
                     {
                         wildCardFlags |= VARY_Y;
                         cy = 0;
+                    }
+                    else if (toupper((int)temp[0]) == 'N')
+                    {
+                        cy = ylength+1;
                     }
                     else
                     {
@@ -140,10 +130,14 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     }
                     break;
                 case 3:
-                    if (strcmp(temp, "*") == 0)
+                    if (temp[0] == '*')
                     {
                         wildCardFlags |= VARY_Z;
                         cz = 0;
+                    }
+                    else if (toupper((int)temp[0]) == 'N')
+                    {
+                        cz = zlength+1;
                     }
                     else
                     {
@@ -159,17 +153,21 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     {
                         cf = MOVING_WALL;
                     }
-                    else if (strcmp(temp, "IN_FLOW") == 0)
+                    else if (strcmp(temp, "INFLOW") == 0)
                     {
-                        cf = IN_FLOW;
+                        cf = INFLOW;
                     }
-                    else if (strcmp(temp, "OUT_FLOW") == 0)
+                    else if (strcmp(temp, "OUTFLOW") == 0)
                     {
-                        cf = OUT_FLOW;
+                        cf = OUTFLOW;
                     }
                     else if (strcmp(temp, "FREE_SLIP") == 0)
                     {
                         cf = FREE_SLIP;
+                    }
+                    else if (strcmp(temp, "PRESSURE_IN") == 0)
+                    {
+                        cf = PRESSURE_IN;
                     }
                     else
                     {
@@ -199,10 +197,10 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
         }
         else
         {
-            flagField[FINDEXOF(xlength, cx, cy, cz)].flag = cf; // set that flag!
-            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[0] = cellParms[0];
-            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[1] = cellParms[1];
-            flagField[FINDEXOF(xlength, cx, cy, cz)].parameters[2] = cellParms[2];
+            flagField[FINDEXOF(cx, cy, cz)].flag = cf; // set that flag!
+            flagField[FINDEXOF(cx, cy, cz)].parms[0] = cellParms[0];
+            flagField[FINDEXOF(cx, cy, cz)].parms[1] = cellParms[1];
+            flagField[FINDEXOF(cx, cy, cz)].parms[2] = cellParms[2];
         }
     }
   }
@@ -228,18 +226,16 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
         max_k = zlength + 1;
     }
 
-    printf("\t\tSetting wild flags: %d\n\t\t\t x: %d -> %d\n\t\t\t y: %d -> %d\n\t\t\t z: %d -> %d\n", varying, i, max_i, j, max_j, k, max_k);
-
     for (i = xstart; i <= max_i; i++)
     {
         for (j = ystart; j <= max_j; j++)
         {
             for (k = zstart; k <= max_k; k++)
             {
-                flagField[FINDEXOF(xlength, i, j, k)].flag = flag;
-                flagField[FINDEXOF(xlength, i, j, k)].parameters[0] = cell_parameters[0];
-                flagField[FINDEXOF(xlength, i, j, k)].parameters[1] = cell_parameters[1];
-                flagField[FINDEXOF(xlength, i, j, k)].parameters[2] = cell_parameters[2];
+                flagField[FINDEXOF(i, j, k)].flag = flag;
+                flagField[FINDEXOF(i, j, k)].parms[0] = cell_parameters[0];
+                flagField[FINDEXOF(i, j, k)].parms[1] = cell_parameters[1];
+                flagField[FINDEXOF(i, j, k)].parms[2] = cell_parameters[2];
             }
         }
     }

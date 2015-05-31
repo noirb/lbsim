@@ -11,17 +11,15 @@ int main(int argc, char *argv[]){
     double    *collideField=NULL;
     double    *streamField=NULL;
     flag_data *flagField=NULL;
-    char cellDataFile[20];
     int xlength;
     int ylength;
     int zlength;
     int totalElements;
     double tau;
-    double velocityWall[3];
     int timesteps;
     int timestepsPerPlotting;
 
-    if (readParameters(&xlength, &ylength, &zlength, &tau, velocityWall, &timesteps, &timestepsPerPlotting, cellDataFile, argc, argv) == -1)
+    if (readParameters(&xlength, &ylength, &zlength, &tau, &timesteps, &timestepsPerPlotting, argc, argv) == -1)
     {
         fprintf(stderr, "Error reading parameter file: %s\n", argv[1]);
         return 0; // exit if readParameters returned an error
@@ -43,19 +41,19 @@ int main(int argc, char *argv[]){
     }
 
     printf("Initializing fields..."); fflush(stdout);
-    initialiseFields(collideField, streamField, flagField, xlength, ylength, zlength, cellDataFile);
+    initialiseFields(collideField, streamField, flagField, xlength, ylength, zlength, argv[1]);
     printf("Done!\n");
 
     for(int t = 0; t < timesteps; t++)
     {
         double *swap=NULL;
-        doStreaming(collideField, streamField, flagField, xlength);
+        doStreaming(collideField, streamField, flagField, xlength, ylength, zlength);
         swap = collideField;
         collideField = streamField;
         streamField = swap;
 
-        doCollision(collideField, flagField, &tau, xlength);
-        treatBoundary(collideField,flagField,velocityWall,xlength);
+        doCollision(collideField, flagField, &tau, xlength, ylength, zlength);
+        treatBoundary(collideField, flagField, xlength, ylength, zlength);
 
         if (t%timestepsPerPlotting==0)
         {

@@ -1,4 +1,4 @@
-xlength		10
+xlength		40
 ylength		10
 zlength		10
 
@@ -6,10 +6,8 @@ tau         1.5
 
 timesteps    100
 
-timestepsPerPlotting 10
+timestepsPerPlotting 1
 
-
-# -- CELL DATA -- #
 # Regions can be filled with the specified flag using the * wildcard (to speciy all coordinates along that axis be used)
 # Additionally, the maximal index in a dimension can be specified with N, so these regions can scale with the problem size
 

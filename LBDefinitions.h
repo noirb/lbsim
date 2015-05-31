@@ -62,14 +62,15 @@
         FLUID,
         NO_SLIP,
         MOVING_WALL,
-        IN_FLOW,
-        OUT_FLOW,
-        FREE_SLIP
+        INFLOW,
+        OUTFLOW,
+        FREE_SLIP,
+        PRESSURE_IN
         } cell_flag;
 
   typedef struct {
         cell_flag flag;
-        double parameters[3]; // TODO: we may want to dynamically allocate this since it's not used for most cells
+        double parms[3]; // TODO: we may want to dynamically allocate this since it's not used for most cells
         } flag_data;
 
   /* ---------------------------------------- */
@@ -77,20 +78,18 @@
   /* ---------------------------------------- */
 
   // used for collide & stream fields to get a distribution at x,y,z,i
-  #define INDEXOF(xlength, x, y, z, i) __extension__({ \
-                                                       int index = _INDEXOF_((xlength), (x), (y), (z), (i)); \
-                                                       assert(index >= 0); assert(index < NUMBER_OF_LATTICE_DIRECTIONS * pow(xlength+2, NUMBER_OF_COORDINATES)); \
-                                                       index; \
-                                                     })
-  #define _INDEXOF_(xlength, x, y, z, i) (19 * ((z) * (xlength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
+  #define INDEXOF(x, y, z, i) __extension__({ \
+                                               int index = _INDEXOF_((x), (y), (z), (i)); \
+                                               index; \
+                                            })
+  #define _INDEXOF_(x, y, z, i) (19 * ((z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
 
   // used for flag field to get flag at x,y,z
-  #define FINDEXOF(xlength, x, y, z) __extension__({ \
-                                                     int index = _FINDEXOF_((xlength), (x), (y), (z)); \
-                                                     assert(index >= 0); assert(index < pow(xlength+2, NUMBER_OF_COORDINATES)); \
-                                                     index; \
-                                                     })
-  #define _FINDEXOF_(xlength, x, y, z) ((z) * (xlength+2) * (xlength+2) + (y) * (xlength+2) + (x))
+  #define FINDEXOF(x, y, z) __extension__({ \
+                                             int index = _FINDEXOF_((x), (y), (z)); \
+                                             index; \
+                                           })
+  #define _FINDEXOF_(x, y, z) ( (z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x) )
 
 #endif
 

@@ -20,21 +20,21 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
 
   // allocate space to store densities so we don't recompute them 
   // when computing the velocity
-  double *densities = (double*) malloc(sizeof(double) * pow(xlength+2, 3));
+  double *densities = (double*) malloc(sizeof(double) * (xlength+2)*(ylength+2)*(zlength+2));
 
-  write_vtkHeader( fp, xlength);
-  write_vtkPointCoordinates(fp, xlength, 1, 1, 1);
+  write_vtkHeader( fp, xlength, ylength, zlength);
+  write_vtkPointCoordinates(fp, xlength, ylength, zlength, 1, 1, 1);
 
   // output density values for every inner cell
   fprintf(fp,"\n");
-  fprintf(fp,"POINT_DATA %i \n", (xlength)*(xlength)*(xlength) );
+  fprintf(fp,"POINT_DATA %i \n", (xlength)*(ylength)*(zlength) );
   fprintf(fp, "SCALARS density float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(i = 1; i < xlength+1; i++) {
-    for(j = 1; j < xlength+1; j++) {
-      for(k = 1; k < xlength+1; k++) {
-        computeDensity(&collideField[INDEXOF(xlength, i,j,k,0)], &densities[FINDEXOF(xlength, i,j,k)]);
-        fprintf(fp, "%f\n", densities[FINDEXOF(xlength, i,j,k)] );
+  for(k = 1; k < zlength+1; k++) {
+    for(j = 1; j < ylength+1; j++) {
+      for(i = 1; i < xlength+1; i++) {
+        computeDensity(&collideField[INDEXOF(i,j,k,0)], &densities[FINDEXOF(i,j,k)]);
+        fprintf(fp, "%f\n", densities[FINDEXOF(i,j,k)] );
       }
     }
   }
@@ -43,10 +43,10 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   fprintf(fp, "\n");
   fprintf(fp, "SCALARS flag float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(i = 1; i < xlength+1; i++) {
-    for(j = 1; j < xlength+1; j++) {
-      for(k = 1; k < xlength+1; k++) {
-        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(xlength, i,j,k)].flag);
+  for(k = 1; k < zlength+1; k++) {
+    for(j = 1; j < ylength+1; j++) {
+      for(i = 1; i < xlength+1; i++) {
+        fprintf(fp, "%f\n", (double)flagField[FINDEXOF(i,j,k)].flag);
       }
     }
   }
@@ -54,11 +54,11 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   // output velocity values for every inner cell
   fprintf(fp,"\n");
   fprintf(fp, "VECTORS velocity float\n");
-  for(i = 1; i < xlength+1; i++) {
-    for(j = 1; j < xlength+1; j++) {
-      for(k = 1; k < xlength+1; k++) {
+  for(k = 1; k < zlength+1; k++) {
+    for(j = 1; j < ylength+1; j++) {
+      for(i = 1; i < xlength+1; i++) {
         double velocity[3];
-        computeVelocity(&collideField[INDEXOF(xlength, i,j,k,0)], densities+FINDEXOF(xlength, i, j, k), velocity);
+        computeVelocity(&collideField[INDEXOF(i,j,k,0)], densities+FINDEXOF(i, j, k), velocity);
         fprintf(fp, "%f %f %f\n", velocity[0], velocity[1], velocity[2]);
       }
     }
@@ -75,7 +75,7 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   }
 }
 
-void write_vtkHeader( FILE *fp, int xlength)
+void write_vtkHeader( FILE *fp, int xlength, int ylength, int zlength)
 {
 
   if( fp == NULL )
@@ -91,13 +91,13 @@ void write_vtkHeader( FILE *fp, int xlength)
   fprintf(fp,"ASCII\n");
   fprintf(fp,"\n");	
   fprintf(fp,"DATASET STRUCTURED_GRID\n");
-  fprintf(fp,"DIMENSIONS  %i %i %i\n", xlength, xlength, xlength);
-  fprintf(fp,"POINTS %i float\n", (xlength)*(xlength)*(xlength) );
+  fprintf(fp,"DIMENSIONS  %i %i %i\n", xlength, ylength, zlength);
+  fprintf(fp,"POINTS %i float\n", (xlength)*(ylength)*(zlength) );
   fprintf(fp,"\n");
 }
 
 
-void write_vtkPointCoordinates( FILE *fp, int xlength, double dx, double dy, double dz)
+void write_vtkPointCoordinates( FILE *fp, int xlength, int ylength, int zlength, double dx, double dy, double dz)
 {
   double originX = 0.0;
   double originY = 0.0;
@@ -108,9 +108,9 @@ void write_vtkPointCoordinates( FILE *fp, int xlength, double dx, double dy, dou
   int k = 0;
 
   // generate equal-spaced grid points
-  for(i = 0; i < xlength; i++) {
-    for(j = 0; j < xlength; j++) {
-      for (k = 0; k < xlength; k++) {
+  for(k = 0; k < zlength; k++) {
+    for(j = 0; j < ylength; j++) {
+      for (i = 0; i < xlength; i++) {
         fprintf(fp, "%f %f %f\n", originX+(i*dx), originY+(j*dy), originZ+(k*dz) );
       }
     }

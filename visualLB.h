@@ -20,7 +20,7 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
  *
  * @author Tobias Neckel
  */
-void write_vtkHeader( FILE *fp, int xlength);
+void write_vtkHeader( FILE *fp, int xlength, int ylength, int zlength);
 
 /**
  * Method for writing grid coordinate information in vtk format.
@@ -33,7 +33,7 @@ void write_vtkHeader( FILE *fp, int xlength);
  *
  * @author Tobias Neckel
  */
-void write_vtkPointCoordinates( FILE *fp, int xlength, double dx, double dy, double dz);
+void write_vtkPointCoordinates( FILE *fp, int xlength, int ylength, int zlength, double dx, double dy, double dz);
 
 #endif
 
