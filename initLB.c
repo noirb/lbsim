@@ -10,7 +10,6 @@ int readParameters(
                     double  *tau,
                     int     *timesteps,
                     int     *timestepsPerPlotting,
-                    char    *cellDataPath,
                     int     argc,
                     char    *argv[]
                     )
@@ -21,20 +20,12 @@ int readParameters(
     return -1;
   }
 
-  char cellDataFile[80];
-  char temp[80];
-
   READ_INT(argv[1],     *xlength);
   READ_INT(argv[1],     *ylength);
   READ_INT(argv[1],     *zlength);
   READ_DOUBLE(argv[1],  *tau);
   READ_INT(argv[1],     *timesteps);
   READ_INT(argv[1],     *timestepsPerPlotting);
-  READ_STRING(argv[1],  cellDataFile);
-
-  strcpy(temp, argv[1]); // make temporary copy of file path in case dirname modifies the source...
-  char *inputFileDir = dirname(temp);
-  sprintf(cellDataPath, "%s/%s", inputFileDir, cellDataFile);
 
   return 0;
 }
@@ -80,7 +71,7 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
   }
 
   // read cell data file to set boundary & obstacle conditions
-  printf("\n\tParsing cell data file: %s\n", cellDataFile);
+  printf("\n\tParsing cell data from file: %s\n", cellDataFile);
   regcomp(&regex_single, pattern_singlecell, REG_EXTENDED);
 
   int cx, cy, cz, cf;

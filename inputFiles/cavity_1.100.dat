@@ -12,4 +12,14 @@ timesteps    101
 
 timestepsPerPlotting 10
 
-cellDataFile cavity_1.100.cel
+
+# -- CELL DATA -- #
+# top boundary as moving_wall
+(* 101 *) MOVING_WALL (0.01 0 0)
+
+# all other walls as no_slip -- 11 here is our maximal index
+(0 * *) NO_SLIP
+(* 0 *) NO_SLIP
+(* * 0) NO_SLIP
+(* * 101) NO_SLIP
+(101 * *) NO_SLIP

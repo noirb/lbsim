@@ -19,7 +19,6 @@ int readParameters(
     double *tau,                        /* relaxation parameter tau. Parameter name: "tau" */
     int *timesteps,                     /* number of timesteps. Parameter name: "timesteps" */
     int *timestepsPerPlotting,          /* timesteps between subsequent VTK plots. Parameter name: "vtkoutput" */
-    char *cellDataPath,                 /* path to file containing cell descriptions. Parameter name: "cellDataPath" */
     int argc,                           /* number of arguments. Should equal 2 (program + name of config file */
     char *argv[]                        /* argv[1] shall contain the path to the config file */
 );

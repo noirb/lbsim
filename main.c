@@ -11,7 +11,6 @@ int main(int argc, char *argv[]){
     double    *collideField=NULL;
     double    *streamField=NULL;
     flag_data *flagField=NULL;
-    char cellDataFile[80];
     int xlength;
     int ylength;
     int zlength;
@@ -20,7 +19,7 @@ int main(int argc, char *argv[]){
     int timesteps;
     int timestepsPerPlotting;
 
-    if (readParameters(&xlength, &ylength, &zlength, &tau, &timesteps, &timestepsPerPlotting, cellDataFile, argc, argv) == -1)
+    if (readParameters(&xlength, &ylength, &zlength, &tau, &timesteps, &timestepsPerPlotting, argc, argv) == -1)
     {
         fprintf(stderr, "Error reading parameter file: %s\n", argv[1]);
         return 0; // exit if readParameters returned an error
@@ -42,7 +41,7 @@ int main(int argc, char *argv[]){
     }
 
     printf("Initializing fields..."); fflush(stdout);
-    initialiseFields(collideField, streamField, flagField, xlength, ylength, zlength, cellDataFile);
+    initialiseFields(collideField, streamField, flagField, xlength, ylength, zlength, argv[1]);
     printf("Done!\n");
 
     for(int t = 0; t < timesteps; t++)
