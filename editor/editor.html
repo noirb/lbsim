@@ -253,6 +253,7 @@
                 objects.push(plane);
                 
                 camera.lookAt( new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5) );
+                render();
             }
 
             function init() {
@@ -504,19 +505,21 @@
                 var x = camera.position.x,
                 y = camera.position.y,
                 z = camera.position.z;
+                var rotCenterX = guiMgr.xlength * guiMgr.cellWidth * 0.5;
+                var rotCenterZ = guiMgr.zlength * guiMgr.cellWidth * 0.5;
                 var rotSpeed = 0.1;
 
                 switch( event.keyCode ) {
 
                     case 16: isShiftDown = true; break;
                     case 39:  // right arrow
-                        camera.position.x = x * Math.cos(rotSpeed) + z * Math.sin(rotSpeed);
-                        camera.position.z = z * Math.cos(rotSpeed) - x * Math.sin(rotSpeed);
+                        camera.position.x = rotCenterX + (x - rotCenterX) * Math.cos(rotSpeed) + (z - rotCenterZ) * Math.sin(rotSpeed);
+                        camera.position.z = rotCenterZ + (z - rotCenterZ) * Math.cos(rotSpeed) - (x - rotCenterX) * Math.sin(rotSpeed);
                         camera.lookAt(new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5));
                         break;
                     case 37: // left arrow
-                        camera.position.x = x * Math.cos(rotSpeed) - z * Math.sin(rotSpeed);
-                        camera.position.z = z * Math.cos(rotSpeed) + x * Math.sin(rotSpeed);
+                        camera.position.x = rotCenterX + (x - rotCenterX) * Math.cos(rotSpeed) - (z - rotCenterZ) * Math.sin(rotSpeed);
+                        camera.position.z = rotCenterZ + (z - rotCenterZ) * Math.cos(rotSpeed) + (x - rotCenterX) * Math.sin(rotSpeed);
                         camera.lookAt(new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5));
                         break;
                     case 38: // up arrow
