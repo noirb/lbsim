@@ -539,7 +539,8 @@
 				info.style.top = '10px';
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
-				info.innerHTML = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: move camera';
+                info.style.color = '#afb';
+				info.innerHTML = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: rotate/zoom camera';
 				container.appendChild( info );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
