@@ -23,6 +23,7 @@
 		<script src="three.min.js"></script>
         <script src="dat.gui.min.js"></script>
 		<script src="detector.js"></script>
+        <script src="txt_font.js"></script>
 
 		<script>
             var version = 0.1;
@@ -80,20 +81,21 @@
             var gui;
             var guiMgr = new GuiManager();
             var brushFlags = [ 'NO_SLIP', 'FREE_SLIP', 'INFLOW', 'OUTFLOW', 'PRESSURE_IN', 'MOVING_WALL' ];
-			var container;
-			var camera, scene, renderer;
-			var plane, grid, cube;
-			var mouse, raycaster, isShiftDown = false;
+            var container;
+            var camera, scene, renderer;
+            var plane, grid, cube;
+            var mouse, raycaster, isShiftDown = false;
 
-			var rollOverMesh, rollOverMaterial;
-			var cubeGeo, noslipMaterial, freeslipMaterial, inflowMaterial, outflowMaterial, pressureinMaterial;
+            var positionText = "(0,0,0)";
+            var rollOverMesh, rollOverMaterial;
+            var cubeGeo, noslipMaterial, freeslipMaterial, inflowMaterial, outflowMaterial, pressureinMaterial;
 
-			var objects = [];
+            var objects = [];
             
             var initDone = false;
 
-			init();
-			render();
+            init();
+            render();
 
 
             /// ******************** ///
@@ -112,8 +114,8 @@
                 expData += "timestepsPerPlotting \t" + guiMgr.timestepsPerPlot + "\n";
 
                 // output cell data
-                var children	= scene.children;
-                var voxels	= [];
+                var children = scene.children;
+                var voxels   = [];
 
                 for( var i = 0; i < children.length; i++ ) {
                     var child = children[i];
@@ -540,7 +542,8 @@
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
                 info.style.color = '#afb';
-				info.innerHTML = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: rotate/zoom camera';
+				info.innerHTML  = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: rotate/zoom camera<br />';
+                info.innerHTML += '<div id="position" style="font-weight:bold; color: #ff9;">(0,0,0)</div>';
 				container.appendChild( info );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -644,6 +647,10 @@
 					rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal );
 					rollOverMesh.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
 
+                    positionText = "(" + (rollOverMesh.position.x - 25) / guiMgr.cellWidth +
+                                        "," + (rollOverMesh.position.y - 25) / guiMgr.cellWidth +
+                                        "," + (rollOverMesh.position.z - 25) / guiMgr.cellWidth +
+                                        ")";
 				}
 
 				render();
@@ -788,7 +795,7 @@
 			function render() {
 
 				renderer.render( scene, camera );
-
+                document.getElementById('position').innerHTML = positionText;
 			}
 
 		</script>
