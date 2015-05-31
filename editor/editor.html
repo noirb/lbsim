@@ -233,15 +233,37 @@
                 return result;
             }
 
-			function init() {
+            // resizes the grid when xlength, ylength, or zlength changes
+            function resizeDomain()
+            {
+                scene.remove(grid);
+                scene.remove(plane);
+
+                grid = new THREE.Mesh( new THREE.PlaneGeometry( guiMgr.xlength*guiMgr.cellWidth, guiMgr.zlength*guiMgr.cellWidth, guiMgr.xlength, guiMgr.zlength ), new THREE.MeshBasicMaterial( { color: 0x555555, wireframe: true } ) );
+                grid.rotation.x = - 90 * Math.PI / 180;
+                grid.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                scene.add(grid);
+
+                var geometry = new THREE.PlaneBufferGeometry( guiMgr.cellWidth * guiMgr.xlength, guiMgr.cellWidth * guiMgr.zlength );
+                geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+                plane = new THREE.Mesh( geometry );
+                plane.visible = false;
+                plane.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                scene.add(plane);
+                objects.push(plane);
+                
+                camera.lookAt( new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5) );
+            }
+
+            function init() {
                 // set up GUI
                 var gui = new dat.GUI();
                 gui.add(guiMgr, 'name');
                 gui.add(guiMgr, 'BrushFlag', brushFlags);
                 var domainFolder = gui.addFolder('Domain Settings');
-                domainFolder.add(guiMgr, 'xlength');
-                domainFolder.add(guiMgr, 'ylength');
-                domainFolder.add(guiMgr, 'zlength');
+                domainFolder.add(guiMgr, 'xlength').onFinishChange( function(newValue) { resizeDomain(); });
+                domainFolder.add(guiMgr, 'ylength').onFinishChange( function(newValue) { resizeDomain(); });
+                domainFolder.add(guiMgr, 'zlength').onFinishChange( function(newValue) { resizeDomain(); });
                 
                 var wallFolder = gui.addFolder('Wall Settings');
                 wallFolder.add(guiMgr, 'AutoSet_Xmin');
@@ -300,12 +322,12 @@
 				info.style.top = '10px';
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
-				info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> - voxel painter - webgl<br><strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel';
+				info.innerHTML = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel';
 				container.appendChild( info );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.set( 500, 800, 1300 );
-				camera.lookAt( new THREE.Vector3() );
+				camera.position.set( 500, 900, 1300 );
+				camera.lookAt( new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5) );
 
 				scene = new THREE.Scene();
 
@@ -365,8 +387,8 @@
 
 				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				renderer.domElement.addEventListener( 'keydown', onDocumentKeyDown, false );
-				renderer.domElement.addEventListener( 'keyup', onDocumentKeyUp, false );
+				document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
 
 				//
 
@@ -478,15 +500,37 @@
 
 			}
 
-			function onDocumentKeyDown( event ) {
+            function onDocumentKeyDown( event ) {
+                var x = camera.position.x,
+                y = camera.position.y,
+                z = camera.position.z;
+                var rotSpeed = 0.1;
 
-				switch( event.keyCode ) {
+                switch( event.keyCode ) {
 
-					case 16: isShiftDown = true; break;
+                    case 16: isShiftDown = true; break;
+                    case 39:  // right arrow
+                        camera.position.x = x * Math.cos(rotSpeed) + z * Math.sin(rotSpeed);
+                        camera.position.z = z * Math.cos(rotSpeed) - x * Math.sin(rotSpeed);
+                        camera.lookAt(new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5));
+                        break;
+                    case 37: // left arrow
+                        camera.position.x = x * Math.cos(rotSpeed) - z * Math.sin(rotSpeed);
+                        camera.position.z = z * Math.cos(rotSpeed) + x * Math.sin(rotSpeed);
+                        camera.lookAt(new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5));
+                        break;
+                    case 38: // up arrow
+                        camera.fov *= 0.95;
+                        camera.updateProjectionMatrix();
+                        break;
+                    case 40: // down arrow
+                        camera.fov *= 1.05;
+                        camera.updateProjectionMatrix();
+                        break;
+                }
+                render();
 
-				}
-
-			}
+            }
 
 			function onDocumentKeyUp( event ) {
 
