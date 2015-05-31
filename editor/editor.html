@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - interactive - voxel painter</title>
+		<title>Simple Fluid Boundary Cell Editor</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -233,6 +233,97 @@
                 return result;
             }
 
+            /// ******************** ///
+            /// -   ImportData()   - ///
+            /// ******************** ///
+            function ImportData(data)
+            {
+                var cell_regex = /\((\*|[nN]|[0-9]+) +(\*|[nN]|[0-9]+) +(\*|[nN]|[0-9]+)\) +([A-Z]+_*[A-Z]*) *(\((-?[0-9]+\.[0-9]+|-?[0-9]+) *(-?[0-9]+\.[0-9]+|-?[0-9]+)? *(-?[0-9]+\.[0-9]+|-?[0-9]+)?\))?/;
+                var lines = data.split("\n");
+                // empty scene of any existing voxels
+                var children = objects; //scene.children;
+                for( var i = children.length; i >= 0; --i ) {
+                    var child = children[i];
+                    if( child instanceof THREE.Mesh === false ) continue;
+                    if( child.geometry instanceof THREE.BoxGeometry === false ) continue;
+                    if( child === rollOverMesh ) continue;
+
+                    objects.splice( objects.indexOf( child ), 1 );
+                    scene.remove( child );
+                }
+
+                // parse each line to add new voxels
+                for ( var i = 0; i < lines.length; i++ )
+                {
+                    var matches = cell_regex.exec(lines[i]);
+                    if (matches)
+                    {
+                        var px = null; var py = null; var pz = null;
+
+                        // get position
+                        var cx = matches[1];
+                        var cy = matches[2];
+                        var cz = matches[3];
+                        
+                        // get flag
+                        var cf = matches[4];
+                        
+                        // check for parameters
+                        if (matches[5])
+                        {
+                            px = matches[6];
+                            py = matches[7];
+                            pz = matches[8];
+                            console.log("Found: [" + cx + ", " + cy + ", " + cz + "] : " + cf + " <" + px + ", " + py + ", " + pz + ">");
+                        }
+                        else
+                        {
+                            console.log("Found: [" + cx + ", " + cy + ", " + cz + "] : " + cf);
+                        }
+
+                        // skip borders & wildcards
+                        if (cx == "*" || cy == "*" || cz == "*" ||
+                            cx.toUpperCase() == "N" || cy.toUpperCase() == "N" || cz.toUpperCase() == "N" ||
+                            cx == "0" || cy == "0" || cz == "0")
+                        {
+                            continue;
+                        }
+
+                        // create the voxel
+                        var voxPos = new THREE.Vector3( (cx-1) * guiMgr.cellWidth + 25, (cy-1) * guiMgr.cellWidth + 25, (cz-1) * guiMgr.cellWidth + 25);
+                        var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[cf] );
+                        voxel.position.copy( voxPos );
+                        //voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                        voxel.material.color.setHex(guiMgr.colors[cf]);
+                        
+                        // store cell data for later export
+                        voxel.userData.flag = cf;     // FLAG
+                        
+                        // only store parameter data for flags that require it
+                        switch (cf)
+                        {
+                            case 'MOVING_WALL':
+                                voxel.userData.parms = [px, py, pz];
+                                break;
+                            case 'INFLOW':
+                                voxel.userData.parms = [px, py, pz];
+                                break;
+                            case 'PRESSURE_IN':
+                                voxel.userData.parms = [px];
+                                break;
+                            default:
+                                voxel.userData.parms = [];
+                                break;
+                        }
+
+                        scene.add( voxel );
+                        objects.push( voxel );
+                    }
+                }
+
+                render();
+            }
+
             // resizes the grid when xlength, ylength, or zlength changes
             function resizeDomain()
             {
@@ -323,7 +414,7 @@
 				info.style.top = '10px';
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
-				info.innerHTML = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel';
+				info.innerHTML = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: move camera';
 				container.appendChild( info );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -390,6 +481,8 @@
 				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
 				document.addEventListener( 'keydown', onDocumentKeyDown, false );
 				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+                document.addEventListener( 'drop', onDocumentDrop, false);
+                document.addEventListener( 'dragover', onDocumentDragOver, false);
 
 				//
 
@@ -447,15 +540,13 @@
 
 					// delete cube
 
-					if ( isShiftDown ) {
+                    if ( isShiftDown ) {
 
-						if ( intersect.object != plane ) {
+                        if ( intersect.object != plane ) {
+                            scene.remove( intersect.object );
 
-							scene.remove( intersect.object );
-
-							objects.splice( objects.indexOf( intersect.object ), 1 );
-
-						}
+                            objects.splice( objects.indexOf( intersect.object ), 1 );
+                        }
 
                     // create cube
 
@@ -492,14 +583,31 @@
 
                         scene.add( voxel );
                         objects.push( voxel );
+                    }
 
-					}
+                    render();
 
-					render();
+                }
 
-				}
+            }
 
-			}
+            function onDocumentDragOver ( event ) {
+                event.preventDefault();
+            }
+
+            function onDocumentDrop( event ) {
+                event.preventDefault();
+                //event.stopPropogation();
+
+                for(var i = 0; i < event.dataTransfer.files.length; i++){
+                    var file        = event.dataTransfer.files[i];
+                    var reader      = new FileReader();
+                    reader.onload   = function (event){
+                        ImportData( event.target.result )
+                    };
+                    reader.readAsText(file);
+                }
+            }
 
             function onDocumentKeyDown( event ) {
                 var x = camera.position.x,
