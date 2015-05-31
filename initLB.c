@@ -31,11 +31,12 @@ int readParameters(
 }
 
 
-void initialiseFields(double *collideField, double *streamField, flag_data *flagField, int xlength, int ylength, int zlength, char* cellDataFile)
+int initialiseFields(double *collideField, double *streamField, flag_data *flagField, int xlength, int ylength, int zlength, char* cellDataFile)
 {
   FILE* cellData;
   char  line[80];
   char  temp[80];
+  int   nline = 0;
   regex_t regex_single;
   regmatch_t pmatch[10];
   vary_flags wildCardFlags = VARY_NONE;
@@ -77,6 +78,7 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
   int cx, cy, cz, cf;
   while (fgets(line, 80, cellData) != NULL)
   {
+    nline++;
     wildCardFlags = VARY_NONE;
     // skip commented lines
     if (line[0] == '#')
@@ -152,10 +154,22 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     else if (strcmp(temp, "MOVING_WALL") == 0)
                     {
                         cf = MOVING_WALL;
+                        // make sure there are parameters to go with this cell
+                        if (pmatch[5].rm_so == -1)
+                        {
+                            fprintf(stderr, "\t\tERROR: Line %d :: Found MOVING_WALL cell without any velocity parameters!\n\t\t >> %s\n", nline, line);
+                            return -1;
+                        }
                     }
                     else if (strcmp(temp, "INFLOW") == 0)
                     {
                         cf = INFLOW;
+                        // make sure there are parameters to go with this cell
+                        if (pmatch[5].rm_so == -1)
+                        {
+                            fprintf(stderr, "\t\tERROR: Line %d :: Found INFLOW cell without any velocity parameters!\n\t\t >> %s\n", nline, line);
+                            return -1;
+                        }
                     }
                     else if (strcmp(temp, "OUTFLOW") == 0)
                     {
@@ -168,6 +182,12 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
                     else if (strcmp(temp, "PRESSURE_IN") == 0)
                     {
                         cf = PRESSURE_IN;
+                        // make sure there are parameters to go with this cell
+                        if (pmatch[5].rm_so == -1)
+                        {
+                            fprintf(stderr, "\t\tERROR: Line %d :: Found PRESSURE_IN cell without any pressure parameter!\n\t\t >> %s\n", nline, line);
+                            return -1;
+                        }
                     }
                     else
                     {
@@ -205,6 +225,8 @@ void initialiseFields(double *collideField, double *streamField, flag_data *flag
     }
   }
   fclose(cellData);
+  
+  return 0;
 }
 
 void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int zstart, double* cell_parameters, int xlength, int ylength, int zlength, vary_flags varying)

@@ -41,7 +41,11 @@ int main(int argc, char *argv[]){
     }
 
     printf("Initializing fields..."); fflush(stdout);
-    initialiseFields(collideField, streamField, flagField, xlength, ylength, zlength, argv[1]);
+    if (initialiseFields(collideField, streamField, flagField, xlength, ylength, zlength, argv[1]) == -1)
+    {
+        fprintf(stderr, "Errors encountered in input. Could not initialize domain. Exiting...\n");
+        return 0;
+    }
     printf("Done!\n");
 
     for(int t = 0; t < timesteps; t++)
