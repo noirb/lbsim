@@ -647,10 +647,10 @@
 					rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal );
 					rollOverMesh.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
 
-                    positionText = "(" + (rollOverMesh.position.x - 25) / guiMgr.cellWidth +
-                                        "," + (rollOverMesh.position.y - 25) / guiMgr.cellWidth +
-                                        "," + (rollOverMesh.position.z - 25) / guiMgr.cellWidth +
-                                        ")";
+                    positionText = "(" + (1 + (rollOverMesh.position.x - 25) / guiMgr.cellWidth) +
+                                   "," + (1 + (rollOverMesh.position.y - 25) / guiMgr.cellWidth) +
+                                   "," + (1 + (rollOverMesh.position.z - 25) / guiMgr.cellWidth) +
+                                   ")";
 				}
 
 				render();
