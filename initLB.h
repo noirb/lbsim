@@ -30,5 +30,7 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
 // sets a region of the flagField to a specific value
 void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int zstart, double* cell_parameters,  int xlength, int ylength, int zlength, vary_flags varying);
 
+// performs some tests to ensure the provided domain configuration is valid & ok to simulate
+int validateFlags(flag_data *flagField, int xlength, int ylength, int zlength);
 #endif
 

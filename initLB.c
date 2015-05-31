@@ -235,8 +235,8 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
     }
   }
   fclose(cellData);
-  
-  return 0;
+
+  return validateFlags(flagField, xlength, ylength, zlength);
 }
 
 void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int zstart, double* cell_parameters, int xlength, int ylength, int zlength, vary_flags varying)
@@ -270,5 +270,68 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
                 flagField[FINDEXOF(i, j, k)].parms[2] = cell_parameters[2];
             }
         }
+    }
+}
+
+int validateFlags(flag_data *flagField, int xlength, int ylength, int zlength)
+{
+    double kernel[3][3][3] = {
+                                {
+                                    {-1, -1, -1},
+                                    {-1,  3, -1},
+                                    {-1, -1, -1}
+                                },
+                                {
+                                    {-1,  3, -1},
+                                    { 3,  4,  3},
+                                    {-1,  3, -1}
+                                },
+                                {
+                                    {-1, -1, -1},
+                                    {-1,  3, -1},
+                                    {-1, -1, -1}
+                                }
+                             };
+    double threshold = 0;
+    double response = 0;
+    double minResponse = 0;
+    double maxResponse = 0;
+
+    for (int i = 1; i < xlength + 1; i++)
+    {
+        for (int j = 1; j < ylength + 1; j++)
+        {
+            for (int k = 1; k < zlength + 1; k++)
+            {
+                if (flagField[FINDEXOF(i,j,k)].flag != FLUID)
+                {
+                    response = 0; // response for this cell
+                    // loop over kernel
+                    for (int ki = -1; ki <= 1; ki++)
+                    {
+                        for (int kj = -1; kj <= 1; kj++)
+                        {
+                            for (int kk = -1; kk <= 1; kk++)
+                            {
+                                response += flagField[FINDEXOF(i + ki, j + kj, k + kk)].flag != FLUID ? kernel[ki+1][kj+1][kk+1] : 0;
+                            }
+                        }
+                    }
+                    minResponse = fmin(response, minResponse);
+                    maxResponse = fmax(response, maxResponse);
+                }
+            }
+        }
+    }
+
+    // validation failed if our worst response was below threshold
+    if (minResponse < threshold)
+    {
+        fprintf(stderr, "\nERROR: Invalid cell configuration detected! Are your diagonal edges too thin?\n---\nMin Validation Response: %f\nMax Validation Response: %f\n---\n\n", minResponse, maxResponse);
+        return -1;
+    }
+    else
+    {
+        return 0;
     }
 }
