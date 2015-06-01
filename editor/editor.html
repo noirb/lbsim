@@ -686,13 +686,13 @@
                             switch (guiMgr.brushOrientation)
                             {
                                 case 'XZ':
-                                    offset = new THREE.Vector3(guiMgr.cellWidth * i, 0, guiMgr.cellWidth * j);
+                                    offset = new THREE.Vector3(guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), 0, guiMgr.cellWidth * (1+ j - guiMgr.brushSize / 2));
                                     break;
                                 case 'XY':
-                                    offset = new THREE.Vector3(guiMgr.cellWidth * i, guiMgr.cellWidth * j, 0);
+                                    offset = new THREE.Vector3(guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (1 + j - guiMgr.brushSize / 2), 0);
                                     break;
                                 case 'YZ':
-                                    offset = new THREE.Vector3(0, guiMgr.cellWidth * i, guiMgr.cellWidth * j);
+                                    offset = new THREE.Vector3(0, guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (1 + j - guiMgr.brushSize / 2));
                                     break;
                             }
                             rollOverMeshes[guiMgr.brushSize * j + i].position.copy( intersect.point).add(offset).add( intersect.face.normal );
