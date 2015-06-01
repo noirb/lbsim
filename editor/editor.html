@@ -34,6 +34,7 @@
                 this.name = "Name";
                 this.BrushFlag = 'NO_SLIP';
                 this.brushSize = 1;
+                this.brushWidth = 1;
                 this.brushOrientation = 'XZ';
                 this.colors = { "NO_SLIP"     : 0x00ff00,
                                 "FREE_SLIP"   : 0x0000ff,
@@ -466,12 +467,20 @@
                 {
                     for (var j = 0; j < newSize; j++)
                     {
-                        var newRollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
-                        scene.add( newRollOverMesh );
-                        rollOverMeshes.push( newRollOverMesh );
+                        for (var k = 0; k < guiMgr.brushWidth; k++)
+                        {
+                            var newRollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+                            scene.add( newRollOverMesh );
+                            rollOverMeshes.push( newRollOverMesh );
+                        }
                     }
                 }
                 render();
+            }
+
+            function setBrushWidth(newWidth)
+            {
+                setBrushSize(guiMgr.brushSize);
             }
 
             function setBrushOrientation(newOrientation)
@@ -508,6 +517,7 @@
                 gui.add(guiMgr, 'name');
                 gui.add(guiMgr, 'BrushFlag', brushFlags);
                 gui.add(guiMgr, 'brushSize', 1, 100).step(1).onFinishChange( function(newValue) { setBrushSize(newValue); });
+                gui.add(guiMgr, 'brushWidth', 1, 20).step(1).onFinishChange( function(newValue) { setBrushWidth(newValue); });
                 gui.add(guiMgr, 'brushOrientation', {XZ: 'XZ', XY: 'XY', YZ: 'YZ'}).onFinishChange( function(newValue) { setBrushOrientation(newValue); });
                 var domainFolder = gui.addFolder('Domain Settings');
                 domainFolder.add(guiMgr, 'xlength').onFinishChange( function(newValue) { resizeDomain(); });
@@ -682,21 +692,24 @@
                     {
                         for (var j = 0; j < guiMgr.brushSize; j++)
                         {
-                            var offset;
-                            switch (guiMgr.brushOrientation)
+                            for (var k = 0; k < guiMgr.brushWidth; k++)
                             {
-                                case 'XZ':
-                                    offset = new THREE.Vector3(guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), 0, guiMgr.cellWidth * (1+ j - guiMgr.brushSize / 2));
-                                    break;
-                                case 'XY':
-                                    offset = new THREE.Vector3(guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (1 + j - guiMgr.brushSize / 2), 0);
-                                    break;
-                                case 'YZ':
-                                    offset = new THREE.Vector3(0, guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (1 + j - guiMgr.brushSize / 2));
-                                    break;
+                                var offset;
+                                switch (guiMgr.brushOrientation)
+                                {
+                                    case 'XZ':
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (k), guiMgr.cellWidth * (1+ j - guiMgr.brushSize / 2));
+                                        break;
+                                    case 'XY':
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (1 + j - guiMgr.brushSize / 2), guiMgr.cellWidth * (k));
+                                        break;
+                                    case 'YZ':
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (k), guiMgr.cellWidth * (1 + i - guiMgr.brushSize / 2), guiMgr.cellWidth * (1 + j - guiMgr.brushSize / 2));
+                                        break;
+                                }
+                                rollOverMeshes[guiMgr.brushSize*guiMgr.brushSize * k + guiMgr.brushSize * j + i].position.copy( intersect.point).add(offset).add( intersect.face.normal );
+                                rollOverMeshes[guiMgr.brushSize*guiMgr.brushSize * k + guiMgr.brushSize * j + i].position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                             }
-                            rollOverMeshes[guiMgr.brushSize * j + i].position.copy( intersect.point).add(offset).add( intersect.face.normal );
-                            rollOverMeshes[guiMgr.brushSize * j + i].position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                         }
                     }
                     positionText = "(" + (1 + (rollOverMeshes[0].position.x - 25) / guiMgr.cellWidth) +
