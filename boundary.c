@@ -14,6 +14,7 @@
 
 void treatBoundary(double *collideField, flag_data* flagField, int xlength, int ylength, int zlength){
     double density_ref = 1.0;
+    double velocity_ref[3] = {0.0, 0.0, 0.0};
 
     int flag;
     double den; // the variable to store the density of the current cell, which is needed for treating moving wall boundary
@@ -130,7 +131,8 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
                                     collideField[INDEXOF(i, j, k, l)] = feq_temp[18 - l] + feq_temp[l] - FINV(i, j, k, l);
                                     break;
                                 case PRESSURE_IN:
-                                    // TODO
+                                    computeFeq(&(flagField[FINDEXOF(i, j, k)].parms[0]), velocity_ref, feq_inlet);
+                                    collideField[INDEXOF(i, j, k, l)] = feq_inlet[l];
                                     break;
                             }
                         }
