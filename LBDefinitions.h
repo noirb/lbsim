@@ -78,18 +78,10 @@
   /* ---------------------------------------- */
 
   // used for collide & stream fields to get a distribution at x,y,z,i
-  #define INDEXOF(x, y, z, i) __extension__({ \
-                                               int index = _INDEXOF_((x), (y), (z), (i)); \
-                                               index; \
-                                            })
-  #define _INDEXOF_(x, y, z, i) (19 * ((z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
+  #define INDEXOF(x, y, z, i) (19 * ((z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x)) + (i))
 
   // used for flag field to get flag at x,y,z
-  #define FINDEXOF(x, y, z) __extension__({ \
-                                             int index = _FINDEXOF_((x), (y), (z)); \
-                                             index; \
-                                           })
-  #define _FINDEXOF_(x, y, z) ( (z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x) )
+  #define FINDEXOF(x, y, z) ( (z) * (ylength+2) * (xlength+2) + (y) * (xlength+2) + (x) )
 
 #endif
 
