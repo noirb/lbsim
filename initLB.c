@@ -27,6 +27,28 @@ int readParameters(
   READ_INT(argv[1],     *timesteps);
   READ_INT(argv[1],     *timestepsPerPlotting);
 
+  // basic input checks
+  if (*tau < 0.5 || *tau > 2)
+  {
+    fprintf(stderr, "ERROR: tau is %f, but must be in the range [0.5 .. 2.0]\n", *tau);
+    return -1;
+  }
+  if (*xlength < 1)
+  {
+    fprintf(stderr, "ERROR: xlength is %d, but must be greater than or equal to 1!\n", *xlength);
+    return -1;
+  }
+  if (*ylength < 1)
+  {
+    fprintf(stderr, "ERROR: ylength is %d, but must be greater than or equal to 1!\n", *ylength);
+    return -1;
+  }
+  if (*zlength < 1)
+  {
+    fprintf(stderr, "ERROR: zlength is %d, but must be greater than or equal to 1!\n", *zlength);
+    return -1;
+  }
+
   return 0;
 }
 
@@ -330,8 +352,6 @@ int validateFlags(flag_data *flagField, int xlength, int ylength, int zlength)
         fprintf(stderr, "\nERROR: Invalid cell configuration detected! Are your diagonal edges too thin?\n---\nMin Validation Response: %f\nMax Validation Response: %f\n---\n\n", minResponse, maxResponse);
         return -1;
     }
-    else
-    {
-        return 0;
-    }
+
+    return 0;
 }
