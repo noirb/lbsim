@@ -33,6 +33,8 @@
             function GuiManager() {
                 this.name = "Name";
                 this.BrushFlag = 'NO_SLIP';
+                this.brushSize = 1;
+                this.brushOrientation = 'XZ';
                 this.colors = { "NO_SLIP"     : 0x00ff00,
                                 "FREE_SLIP"   : 0x0000ff,
                                 "INFLOW"      : 0xff0000,
@@ -91,6 +93,7 @@
             var cubeGeo, noslipMaterial, freeslipMaterial, inflowMaterial, outflowMaterial, pressureinMaterial;
 
             var objects = [];
+            var rollOverMeshes = [];
             
             var initDone = false;
 
@@ -122,7 +125,7 @@
 
                     if( child instanceof THREE.Mesh === false ) continue;
                     if( child.geometry instanceof THREE.BoxGeometry === false ) continue;
-                    if( child === rollOverMesh ) continue;
+                    if( rollOverMeshes.indexOf(child) >= 0 ) continue;
 
                     voxels.push({
                         x     : 1 + (child.position.x - 25) / guiMgr.cellWidth,
@@ -266,7 +269,7 @@
                     var child = children[i];
                     if( child instanceof THREE.Mesh === false ) continue;
                     if( child.geometry instanceof THREE.BoxGeometry === false ) continue;
-                    if( child === rollOverMesh ) continue;
+                    if( rollOverMeshes.indexOf(child) >= 0 ) continue;
 
                     objects.splice( objects.indexOf( child ), 1 );
                     scene.remove( child );
@@ -448,6 +451,34 @@
                 }
             }
 
+            // changes brush size
+            function setBrushSize(newSize)
+            {
+                // remove all rollovermeshes
+                for (var i = rollOverMeshes.length -1; i >= 0; i--)
+                {
+                    scene.remove(rollOverMeshes[i]);
+                    rollOverMeshes.splice( i, 1 );
+                }
+
+                // add newSize x newSize new rollovermeshes
+                for (var i = 0; i < newSize; i++)
+                {
+                    for (var j = 0; j < newSize; j++)
+                    {
+                        var newRollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+                        scene.add( newRollOverMesh );
+                        rollOverMeshes.push( newRollOverMesh );
+                    }
+                }
+                render();
+            }
+
+            function setBrushOrientation(newOrientation)
+            {
+                
+            }
+
             // resizes the grid when xlength, ylength, or zlength changes
             function resizeDomain()
             {
@@ -476,6 +507,8 @@
                 gui = new dat.GUI();
                 gui.add(guiMgr, 'name');
                 gui.add(guiMgr, 'BrushFlag', brushFlags);
+                gui.add(guiMgr, 'brushSize', 1, 100).step(1).onFinishChange( function(newValue) { setBrushSize(newValue); });
+                gui.add(guiMgr, 'brushOrientation', {XZ: 'XZ', XY: 'XY', YZ: 'YZ'}).onFinishChange( function(newValue) { setBrushOrientation(newValue); });
                 var domainFolder = gui.addFolder('Domain Settings');
                 domainFolder.add(guiMgr, 'xlength').onFinishChange( function(newValue) { resizeDomain(); });
                 domainFolder.add(guiMgr, 'ylength').onFinishChange( function(newValue) { resizeDomain(); });
@@ -556,8 +589,9 @@
 
 				rollOverGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
 				rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
-				rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
-				scene.add( rollOverMesh );
+                var newRollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+				scene.add( newRollOverMesh );
+                rollOverMeshes.push( newRollOverMesh );
 
 				// cubes
 
@@ -643,13 +677,31 @@
 
 					var intersect = intersects[ 0 ];
 
-                    rollOverMesh.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
-					rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal );
-					rollOverMesh.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
-
-                    positionText = "(" + (1 + (rollOverMesh.position.x - 25) / guiMgr.cellWidth) +
-                                   "," + (1 + (rollOverMesh.position.y - 25) / guiMgr.cellWidth) +
-                                   "," + (1 + (rollOverMesh.position.z - 25) / guiMgr.cellWidth) +
+                    rollOverMaterial.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
+                    for (var i = 0; i < guiMgr.brushSize; i++)
+                    {
+                        for (var j = 0; j < guiMgr.brushSize; j++)
+                        {
+                            var offset;
+                            switch (guiMgr.brushOrientation)
+                            {
+                                case 'XZ':
+                                    offset = new THREE.Vector3(guiMgr.cellWidth * i, 0, guiMgr.cellWidth * j);
+                                    break;
+                                case 'XY':
+                                    offset = new THREE.Vector3(guiMgr.cellWidth * i, guiMgr.cellWidth * j, 0);
+                                    break;
+                                case 'YZ':
+                                    offset = new THREE.Vector3(0, guiMgr.cellWidth * i, guiMgr.cellWidth * j);
+                                    break;
+                            }
+                            rollOverMeshes[guiMgr.brushSize * j + i].position.copy( intersect.point).add(offset).add( intersect.face.normal );
+                            rollOverMeshes[guiMgr.brushSize * j + i].position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                        }
+                    }
+                    positionText = "(" + (1 + (rollOverMeshes[0].position.x - 25) / guiMgr.cellWidth) +
+                                   "," + (1 + (rollOverMeshes[0].position.y - 25) / guiMgr.cellWidth) +
+                                   "," + (1 + (rollOverMeshes[0].position.z - 25) / guiMgr.cellWidth) +
                                    ")";
 				}
 
@@ -685,43 +737,47 @@
 
                     } else {
 
-                        var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[guiMgr.BrushFlag] );
-                        voxel.position.copy( intersect.point ).add( intersect.face.normal );
-                        voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
-                        voxel.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
-
-                        // don't actually add voxel if it's outside our domain
-                        if ((voxel.position.x - 25) / guiMgr.cellWidth >= guiMgr.xlength)
-                            return;
-                        if ((voxel.position.y - 25) / guiMgr.cellWidth >= guiMgr.ylength)
-                            return;
-                        if ((voxel.position.z - 25) / guiMgr.cellWidth >= guiMgr.zlength)
-                            return;
-                        if ((voxel.position.x < 0) || (voxel.position.y < 0) || (voxel.position.z < 0))
-                            return;
-
-                        // store cell data for later export
-                        voxel.userData.flag = guiMgr.BrushFlag;     // FLAG
-                        
-                        // only store parameter data for flags that require it
-                        switch (guiMgr.BrushFlag)
+                        // make one voxel for each brush element
+                        for (var i = 0; i < rollOverMeshes.length; i++)
                         {
-                            case 'MOVING_WALL':
-                                voxel.userData.parms = [guiMgr.parm1, guiMgr.parm2, guiMgr.parm3];
-                                break;
-                            case 'INFLOW':
-                                voxel.userData.parms = [guiMgr.parm1, guiMgr.parm2, guiMgr.parm3];
-                                break;
-                            case 'PRESSURE_IN':
-                                voxel.userData.parms = [guiMgr.parm1];
-                                break;
-                            default:
-                                voxel.userData.parms = [];
-                                break;
-                        }
+                            var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[guiMgr.BrushFlag] );
+                            voxel.position.copy( rollOverMeshes[i].position );
+                            voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                            voxel.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
 
-                        scene.add( voxel );
-                        objects.push( voxel );
+                            // don't actually add voxel if it's outside our domain
+                            if ((voxel.position.x - 25) / guiMgr.cellWidth >= guiMgr.xlength)
+                                continue;
+                            if ((voxel.position.y - 25) / guiMgr.cellWidth >= guiMgr.ylength)
+                                continue;
+                            if ((voxel.position.z - 25) / guiMgr.cellWidth >= guiMgr.zlength)
+                                continue;
+                            if ((voxel.position.x < 0) || (voxel.position.y < 0) || (voxel.position.z < 0))
+                                continue;
+
+                            // store cell data for later export
+                            voxel.userData.flag = guiMgr.BrushFlag;     // FLAG
+                            
+                            // only store parameter data for flags that require it
+                            switch (guiMgr.BrushFlag)
+                            {
+                                case 'MOVING_WALL':
+                                    voxel.userData.parms = [guiMgr.parm1, guiMgr.parm2, guiMgr.parm3];
+                                    break;
+                                case 'INFLOW':
+                                    voxel.userData.parms = [guiMgr.parm1, guiMgr.parm2, guiMgr.parm3];
+                                    break;
+                                case 'PRESSURE_IN':
+                                    voxel.userData.parms = [guiMgr.parm1];
+                                    break;
+                                default:
+                                    voxel.userData.parms = [];
+                                    break;
+                            }
+
+                            scene.add( voxel );
+                            objects.push( voxel );
+                        }
                     }
 
                     render();
