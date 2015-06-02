@@ -136,6 +136,11 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                     else
                     {
                         sscanf(temp, "%d", &cx);
+                        if (cx < 0 || cx > xlength + 1)
+                        {
+                            logInputError("Out-of-bounds x-coordinate found in input!", nline, line);
+                            return -1;
+                        }
                     }
                     break;
                 case 2:
@@ -151,6 +156,11 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                     else
                     {
                         sscanf(temp, "%d", &cy);
+                        if (cy < 0 || cy > ylength + 1)
+                        {
+                            logInputError("Out-of-bounds y-coordinate found in input!", nline, line);
+                            return -1;
+                        }
                     }
                     break;
                 case 3:
@@ -166,6 +176,11 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                     else
                     {
                         sscanf(temp, "%d", &cz);
+                        if (cz < 0 || cz > zlength + 1)
+                        {
+                            logInputError("Out-of-bounds z-coordinate found in input!", nline, line);
+                            return -1;
+                        }
                     }
                     break;
                 case 4:
@@ -177,14 +192,9 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                     {
                         cf = MOVING_WALL;
                         // make sure there are parameters to go with this cell
-                        if (pmatch[5].rm_so == -1)
+                        if ( (pmatch[5].rm_so == -1) || pmatch[8].rm_so == -1)
                         {
-                            fprintf(stderr, "\t\tERROR: Line %d :: Found MOVING_WALL cell without any velocity parameters!\n\t\t >> %s\n", nline, line);
-                            return -1;
-                        }
-                        else if (pmatch[8].rm_so == -1)
-                        {
-                            fprintf(stderr, "\t\tERROR: Line %d :: Found MOVING_WALL cell with incorrect number of velocity parameters!\n\t\t >> %s\n", nline, line);
+                            logInputError("Found MOVING_WALL cell with invalid velocity parameters!", nline, line);
                             return -1;
                         }
                     }
@@ -192,14 +202,9 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                     {
                         cf = INFLOW;
                         // make sure there are parameters to go with this cell
-                        if (pmatch[5].rm_so == -1)
+                        if ( (pmatch[5].rm_so == -1) || (pmatch[8].rm_so == -1) )
                         {
-                            fprintf(stderr, "\t\tERROR: Line %d :: Found INFLOW cell without any velocity parameters!\n\t\t >> %s\n", nline, line);
-                            return -1;
-                        }
-                        else if (pmatch[8].rm_so == -1)
-                        {
-                            fprintf(stderr, "\t\tERROR: Line %d :: Found INFLOW cell with incorrect number of velocity parameters!\n\t\t >> %s\n", nline, line);
+                            logInputError("Found INFLOW cell with invalid velocity parameters!", nline, line);
                             return -1;
                         }
                     }
@@ -217,13 +222,13 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                         // make sure there are parameters to go with this cell
                         if (pmatch[5].rm_so == -1)
                         {
-                            fprintf(stderr, "\t\tERROR: Line %d :: Found PRESSURE_IN cell without any pressure parameter!\n\t\t >> %s\n", nline, line);
+                            logInputError("Found PRESSURE_IN cell with invalid pressure parameter!", nline, line);
                             return -1;
                         }
                     }
                     else
                     {
-                        printf("ERROR: Unknown Cell Type '%s' found on line %d of %s\n", temp, nline, cellDataFile);
+                        logInputError("Invalid Boundary Cell Type found!", nline, line);
                         return -1;
                     }
                 case 5: // contains all parameter groups
@@ -243,18 +248,9 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
             }
         }
 
-        // if wildcards were found, set all cells that match, otherwise just set this cell
-        if (wildCardFlags)
-        {
-            setFlags(flagField, cf, cx, cy, cz, cellParms, xlength, ylength, zlength, wildCardFlags);
-        }
-        else
-        {
-            flagField[FINDEXOF(cx, cy, cz)].flag = cf; // set that flag!
-            flagField[FINDEXOF(cx, cy, cz)].parms[0] = cellParms[0];
-            flagField[FINDEXOF(cx, cy, cz)].parms[1] = cellParms[1];
-            flagField[FINDEXOF(cx, cy, cz)].parms[2] = cellParms[2];
-        }
+        // set the flag(s) for the cell(s) we found
+        setFlags(flagField, cf, cx, cy, cz, cellParms, xlength, ylength, zlength, wildCardFlags);
+
     }
   }
   fclose(cellData);
@@ -294,6 +290,11 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
             }
         }
     }
+}
+
+void logInputError(char* problem, int line_num, char* line_content)
+{
+    fprintf(stderr, "\t\tERROR: %s\n\t\t\tLine %d >> %s\n\n", problem, line_num, line_content);
 }
 
 int validateFlags(flag_data *flagField, int xlength, int ylength, int zlength)

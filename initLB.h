@@ -32,5 +32,7 @@ void setFlags(flag_data *flagField, cell_flag flag, int xstart, int ystart, int 
 
 // performs some tests to ensure the provided domain configuration is valid & ok to simulate
 int validateFlags(flag_data *flagField, int xlength, int ylength, int zlength);
+
+void logInputError(char* problem, int line_number, char* line_content);
 #endif
 
