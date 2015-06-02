@@ -115,7 +115,7 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
 
                                         for (int mirror = 0; mirror < nMirrorDirs; mirror++)
                                         {
-                                            collideField[INDEXOF(i, j, k, sources[mirror])] = FMIRROR(i, j, k, sources[mirror], mirrors[mirror]);
+                                            collideField[INDEXOF(i, j, k, sources[mirror])] = FMIRROR(i, j, k, l, mirrors[mirror]);
                                         }
                                     }
                                     break;
@@ -131,6 +131,9 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
                                     collideField[INDEXOF(i, j, k, l)] = feq_temp[18 - l] + feq_temp[l] - FINV(i, j, k, l);
                                     break;
                                 case PRESSURE_IN:
+				    ind = INDEXOF(i + LATTICEVELOCITIES[l][0], j + LATTICEVELOCITIES[l][1], k + LATTICEVELOCITIES[l][2], 0);
+                                    computeDensity(collideField+ind, &den);
+                                    computeVelocity(&(collideField[ind]), &den, velocity_ref);
                                     computeFeq(&(flagField[FINDEXOF(i, j, k)].parms[0]), velocity_ref, feq_inlet);
                                     collideField[INDEXOF(i, j, k, l)] = feq_inlet[l];
                                     break;
