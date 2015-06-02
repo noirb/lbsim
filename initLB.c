@@ -223,7 +223,8 @@ int initialiseFields(double *collideField, double *streamField, flag_data *flagF
                     }
                     else
                     {
-                        cf = FLUID;
+                        printf("ERROR: Unknown Cell Type '%s' found on line %d of %s\n", temp, nline, cellDataFile);
+                        return -1;
                     }
                 case 5: // contains all parameter groups
                     continue;
