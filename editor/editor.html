@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <!-- This is largely based on the voxel editor sample by mrdoob: http://threejs.org/examples/webgl_interactive_voxelpainter.html -->
 <html lang="en">
-	<head>
-		<title>Simple Fluid Boundary Cell Editor v0.2</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				font-family: Monospace;
-				background-color: #f0f0f0;
-				margin: 0px;
-				overflow: hidden;
-			}
+    <head>
+        <title>Simple Fluid Boundary Cell Editor v0.2</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {
+                font-family: Monospace;
+                background-color: #f0f0f0;
+                margin: 0px;
+                overflow: hidden;
+            }
 
-			#oldie { background-color: #ddd !important }
-		</style>
-	</head>
-	<body>
+            #oldie { background-color: #ddd !important }
+        </style>
+    </head>
+    <body>
 
             <div id="main">
             </div>
 
-		<script src="three.min.js"></script>
+        <script src="three.min.js"></script>
         <script src="dat.gui.min.js"></script>
-		<script src="detector.js"></script>
+        <script src="detector.js"></script>
 
-		<script>
+        <script>
             var version = 0.2;
 
             if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
@@ -36,14 +36,14 @@
                 this.brushSize = 1;
                 this.brushWidth = 1;
                 this.brushOrientation = 'XZ';
-                this.colors = { "NO_SLIP"     : 0x00ff00,
-                                "FREE_SLIP"   : 0x0000ff,
-                                "INFLOW"      : 0xff0000,
-                                "OUTFLOW"     : 0xffff00,
-                                "PRESSURE_IN" : 0x00ffff,
-                                "MOVING_WALL" : 0xff00ff
+                this.colors = { "NO_SLIP"       : 0x00ff00,
+                                "FREE_SLIP"     : 0x0000ff,
+                                "INFLOW"        : 0xff0000,
+                                "OUTFLOW"       : 0xffff00,
+                                "PRESSURE_IN"   : 0x00ffff,
+                                "MOVING_WALL"   : 0xff00ff
                               }
-                this.materials = {}
+                this.materials = {};
 
                 // domain variables
                 this.ScaleX = function () { rescaleX(); };
@@ -95,6 +95,9 @@
             var positionText = "(0,0,0)";
             var rollOverMesh, rollOverMaterial;
             var cubeGeo, noslipMaterial, freeslipMaterial, inflowMaterial, outflowMaterial, pressureinMaterial;
+
+            // png encoded in base64 to avoid needing to load an external file for textures (which can easily fail when running the page locally)
+            var boxTexture = "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";
 
             var objects = [];
             var rollOverMeshes = [];
@@ -292,10 +295,10 @@
                         var cx = matches[1];
                         var cy = matches[2];
                         var cz = matches[3];
-                        
+
                         // get flag
                         var cf = matches[4];
-                        
+
                         // check for parameters
                         if (matches[5])
                         {
@@ -370,10 +373,10 @@
                         voxel.position.copy( voxPos );
                         //voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                         voxel.material.color.setHex(guiMgr.colors[cf]);
-                        
+
                         // store cell data for later export
                         voxel.userData.flag = cf;     // FLAG
-                        
+
                         // only store parameter data for flags that require it
                         switch (cf)
                         {
@@ -438,7 +441,6 @@
 
                 // update UI controls to reflect any changes
                 updateAllUIValues(gui);
-                
                 resizeDomain();
                 render();
             }
@@ -488,7 +490,7 @@
 
             function setBrushOrientation(newOrientation)
             {
-                
+
             }
 
             // resizes the grid when xlength, ylength, or zlength changes
@@ -509,12 +511,12 @@
                 plane.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
                 scene.add(plane);
                 objects.push(plane);
-                
+
                 camera.lookAt( new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5) );
-                
+
                 render();
             }
-            
+
             function rescaleDomain(xScale, yScale, zScale)
             {
                 var scaleMat = new THREE.Matrix4();
@@ -523,10 +525,10 @@
                 guiMgr.xlength *= xScale;
                 guiMgr.ylength *= yScale;
                 guiMgr.zlength *= zScale;
-                
+
                 resizeDomain();
                 updateAllUIValues(gui);
-                
+
                 // loop over domain to find cells we need to place new voxels in
                 var newPoints = [];
                 for (var i = 0; i < guiMgr.xlength; i++)
@@ -551,7 +553,7 @@
                         }
                     }
                 }
-                
+
                 // clear existing voxels
                 var children = objects; //scene.children;
                 for( var i = children.length; i >= 0; --i ) {
@@ -563,7 +565,7 @@
                     objects.splice( objects.indexOf( child ), 1 );
                     scene.remove( child );
                 }
-                
+
                 // add voxels at all new points
                 for (var i = 0; i < newPoints.length; i++)
                 {
@@ -582,7 +584,7 @@
                         continue;
                     if ((voxel.position.x < 0) || (voxel.position.y < 0) || (voxel.position.z < 0))
                         continue;
-                    
+
                     // only store parameter data for flags that require it
                     switch (guiMgr.BrushFlag)
                     {
@@ -612,14 +614,14 @@
                 scaleFactor = parseFloat(scaleFactor) / 100.0;
                 rescaleDomain(scaleFactor, 1.0, 1.0);
             }
-            
+
             function rescaleY()
             {
                 var scaleFactor = window.prompt("Scale Y by percentage:", "100");
                 scaleFactor = parseFloat(scaleFactor) / 100.0;
                 rescaleDomain(1.0, scaleFactor, 1.0);
             }
-            
+
             function rescaleZ()
             {
                 var scaleFactor =    window.prompt("Scale Z by percentage:", "100");
@@ -645,7 +647,7 @@
                 domainFolder.add(guiMgr, 'tau', 0.5, 2.0);
                 domainFolder.add(guiMgr, 'timesteps');
                 domainFolder.add(guiMgr, 'timestepsPerPlot');
-                
+
                 var wallFolder = gui.addFolder('Wall Settings');
                 wallFolder.add(guiMgr, 'AutoSet_Xmin');
                 var xminFolder = wallFolder.addFolder('X Min');
@@ -653,35 +655,35 @@
                 xminFolder.add(guiMgr, 'Xmin_p1').step(0.001);
                 xminFolder.add(guiMgr, 'Xmin_p2').step(0.001);
                 xminFolder.add(guiMgr, 'Xmin_p3').step(0.001);
-                
+
                 wallFolder.add(guiMgr, 'AutoSet_Xmax');
                 var xmaxFolder = wallFolder.addFolder('X Max');
                 xmaxFolder.add(guiMgr, 'Xmax', brushFlags);
                 xmaxFolder.add(guiMgr, 'Xmax_p1').step(0.001);
                 xmaxFolder.add(guiMgr, 'Xmax_p2').step(0.001);
                 xmaxFolder.add(guiMgr, 'Xmax_p3').step(0.001);
-                
+
                 wallFolder.add(guiMgr, 'AutoSet_Ymin');
                 var yminFolder = wallFolder.addFolder('Y Min');
                 yminFolder.add(guiMgr, 'Ymin', brushFlags);
                 yminFolder.add(guiMgr, 'Ymin_p1').step(0.001);
                 yminFolder.add(guiMgr, 'Ymin_p2').step(0.001);
                 yminFolder.add(guiMgr, 'Ymin_p3').step(0.001);
-                
+
                 wallFolder.add(guiMgr, 'AutoSet_Ymax');
                 var ymaxFolder = wallFolder.addFolder('Y Max');
                 ymaxFolder.add(guiMgr, 'Ymax', brushFlags);
                 ymaxFolder.add(guiMgr, 'Ymax_p1').step(0.001);
                 ymaxFolder.add(guiMgr, 'Ymax_p2').step(0.001);
                 ymaxFolder.add(guiMgr, 'Ymax_p3').step(0.001);
-                
+
                 wallFolder.add(guiMgr, 'AutoSet_Zmin');
                 var zminFolder = wallFolder.addFolder('Z Min');
                 zminFolder.add(guiMgr, 'Zmin', brushFlags);
                 zminFolder.add(guiMgr, 'Zmin_p1').step(0.001);
                 zminFolder.add(guiMgr, 'Zmin_p2').step(0.001);
                 zminFolder.add(guiMgr, 'Zmin_p3').step(0.001);
-                
+
                 wallFolder.add(guiMgr, 'AutoSet_Zmax');
                 var zmaxFolder = wallFolder.addFolder('Z Max');
                 zmaxFolder.add(guiMgr, 'Zmax', brushFlags);
@@ -695,117 +697,107 @@
                 parmFolder.add(guiMgr, 'parm3').step(0.001);
                 gui.add(guiMgr, 'export');
 
-				container = document.getElementById('main'); //createElement( 'div' );
-				//document.body.appendChild( container );
+                container = document.getElementById('main'); //createElement( 'div' );
 
-				var info = document.createElement( 'div' );
-				info.style.position = 'absolute';
-				info.style.top = '10px';
-				info.style.width = '100%';
-				info.style.textAlign = 'center';
+                var info = document.createElement( 'div' );
+                info.style.position = 'absolute';
+                info.style.top = '10px';
+                info.style.width = '100%';
+                info.style.textAlign = 'center';
                 info.style.color = '#afb';
-				info.innerHTML  = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: rotate/zoom camera<br />';
+                info.innerHTML  = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel, <strong>Arrow Keys</strong>: rotate/zoom camera<br />';
                 info.innerHTML += '<div id="position" style="font-weight:bold; color: #ff9;">(0,0,0)</div>';
-				container.appendChild( info );
+                container.appendChild( info );
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.set( 500, 900, 1300 );
-				camera.lookAt( new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5) );
+                camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+                camera.position.set( 500, 900, 1300 );
+                camera.lookAt( new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5) );
 
-				scene = new THREE.Scene();
+                scene = new THREE.Scene();
 
-				// roll-over helpers
-
-				rollOverGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
-				rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
+                // roll-over helpers
+                rollOverGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
+                rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } );
                 var newRollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
-				scene.add( newRollOverMesh );
+                scene.add( newRollOverMesh );
                 rollOverMeshes.push( newRollOverMesh );
 
-				// cubes
+                // cubes
+                var txImage = document.createElement('img');
+                var texture = new THREE.Texture(txImage);
+                txImage.onload = function() { texture.needsUpdate = true; };
+                txImage.src = 'data:image/png;base64,' + boxTexture;
+                cubeGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
+                guiMgr.materials['NO_SLIP']     = new THREE.MeshLambertMaterial( { color: guiMgr.colors['NO_SLIP'], shading: THREE.FlatShading, map: texture } );
+                guiMgr.materials['FREE_SLIP']   = new THREE.MeshLambertMaterial( { color: guiMgr.colors['FREE_SLIP'], shading: THREE.FlatShading, map: texture } );
+                guiMgr.materials['INFLOW']      = new THREE.MeshLambertMaterial( { color: guiMgr.colors['INFLOW'], shading: THREE.FlatShading, map: texture } );
+                guiMgr.materials['OUTFLOW']     = new THREE.MeshLambertMaterial( { color: guiMgr.colors['OUTFLOW'], shading: THREE.FlatShading, map: texture } );
+                guiMgr.materials['PRESSURE_IN'] = new THREE.MeshLambertMaterial( { color: guiMgr.colors['PRESSURE_IN'], shading: THREE.FlatShading, map: texture } );
+                guiMgr.materials['MOVING_WALL'] = new THREE.MeshLambertMaterial( { color: guiMgr.colors['MOVING_WALL'], shading: THREE.FlatShading, map: texture } );
 
-				cubeGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
-				guiMgr.materials['NO_SLIP']     = new THREE.MeshLambertMaterial( { color: guiMgr.colors['NO_SLIP'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
-                guiMgr.materials['FREE_SLIP']   = new THREE.MeshLambertMaterial( { color: guiMgr.colors['FREE_SLIP'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
-                guiMgr.materials['INFLOW']      = new THREE.MeshLambertMaterial( { color: guiMgr.colors['INFLOW'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
-                guiMgr.materials['OUTFLOW']     = new THREE.MeshLambertMaterial( { color: guiMgr.colors['OUTFLOW'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
-                guiMgr.materials['PRESSURE_IN'] = new THREE.MeshLambertMaterial( { color: guiMgr.colors['PRESSURE_IN'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
-                guiMgr.materials['MOVING_WALL'] = new THREE.MeshLambertMaterial( { color: guiMgr.colors['MOVING_WALL'], shading: THREE.FlatShading, map: THREE.ImageUtils.loadTexture( "square-outline.png" ) } );
-
-				// grid
-
-				grid = new THREE.Mesh( new THREE.PlaneGeometry( guiMgr.xlength*guiMgr.cellWidth, guiMgr.zlength*guiMgr.cellWidth, guiMgr.xlength, guiMgr.zlength ), new THREE.MeshBasicMaterial( { color: 0x0066aa, wireframe: true } ) );
-				grid.rotation.x = - 90 * Math.PI / 180;
+                // grid
+                grid = new THREE.Mesh( new THREE.PlaneGeometry( guiMgr.xlength*guiMgr.cellWidth, guiMgr.zlength*guiMgr.cellWidth, guiMgr.xlength, guiMgr.zlength ), new THREE.MeshBasicMaterial( { color: 0x0066aa, wireframe: true } ) );
+                grid.rotation.x = - 90 * Math.PI / 180;
                 grid.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
-				scene.add( grid );
+                scene.add( grid );
 
-				//
 
-				raycaster = new THREE.Raycaster();
-				mouse = new THREE.Vector2();
+                raycaster = new THREE.Raycaster();
+                mouse = new THREE.Vector2();
 
-				var geometry = new THREE.PlaneBufferGeometry( guiMgr.cellWidth * guiMgr.xlength, guiMgr.cellWidth * guiMgr.zlength );
-				geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-
-				plane = new THREE.Mesh( geometry );
-				plane.visible = false;
+                // invisible plane for intersection checks w/ mouse vector
+                var geometry = new THREE.PlaneBufferGeometry( guiMgr.cellWidth * guiMgr.xlength, guiMgr.cellWidth * guiMgr.zlength );
+                geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+                plane = new THREE.Mesh( geometry );
+                plane.visible = false;
                 plane.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
-				scene.add( plane );
+                scene.add( plane );
+                objects.push( plane );
 
-				objects.push( plane );
+                // Lights
+                var ambientLight = new THREE.AmbientLight( 0x606060 );
+                scene.add( ambientLight );
 
-				// Lights
+                var directionalLight = new THREE.DirectionalLight( 0xffffff );
+                directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
+                scene.add( directionalLight );
 
-				var ambientLight = new THREE.AmbientLight( 0x606060 );
-				scene.add( ambientLight );
+                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer.setClearColor( 0x202020 );
+                renderer.setPixelRatio( window.devicePixelRatio );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                container.appendChild( renderer.domElement );
 
-				var directionalLight = new THREE.DirectionalLight( 0xffffff );
-				directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
-				scene.add( directionalLight );
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setClearColor( 0x202020 );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
-
-				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				document.addEventListener( 'keydown', onDocumentKeyDown, false );
-				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+                renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
+                renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                document.addEventListener( 'keydown', onDocumentKeyDown, false );
+                document.addEventListener( 'keyup', onDocumentKeyUp, false );
                 document.addEventListener( 'drop', onDocumentDrop, false);
                 document.addEventListener( 'dragover', onDocumentDragOver, false);
 
-				//
-
-				window.addEventListener( 'resize', onWindowResize, false );
+                window.addEventListener( 'resize', onWindowResize, false );
 
                 initDone = true;
-			}
+            }
 
-			function onWindowResize() {
+            function onWindowResize() {
 
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+            }
 
-			}
+            function onDocumentMouseMove( event ) {
+                event.preventDefault();
 
-			function onDocumentMouseMove( event ) {
+                mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
 
-				event.preventDefault();
+                raycaster.setFromCamera( mouse, camera );
+                var intersects = raycaster.intersectObjects( objects );
 
-				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-
-				raycaster.setFromCamera( mouse, camera );
-
-				var intersects = raycaster.intersectObjects( objects );
-
-				if ( intersects.length > 0 ) {
-
-					var intersect = intersects[ 0 ];
-
+                if ( intersects.length > 0 ) {
+                    var intersect = intersects[ 0 ];
                     rollOverMaterial.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
                     for (var i = 0; i < guiMgr.brushSize; i++)
                     {
@@ -817,13 +809,13 @@
                                 switch (guiMgr.brushOrientation)
                                 {
                                     case 'XZ':
-                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * (k), guiMgr.cellWidth * (0.5+ j - guiMgr.brushSize / 2.0));
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * k, guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize / 2.0));
                                         break;
                                     case 'XY':
-                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize / 2.0), guiMgr.cellWidth * (k));
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * j, guiMgr.cellWidth * (0.5 + k - guiMgr.brushWidth / 2.0));
                                         break;
                                     case 'YZ':
-                                        offset = new THREE.Vector3(guiMgr.cellWidth * (k), guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize / 2.0));
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + k - guiMgr.brushWidth / 2.0), guiMgr.cellWidth * i, guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize / 2.0));
                                         break;
                                 }
                                 rollOverMeshes[guiMgr.brushSize*guiMgr.brushSize * k + guiMgr.brushSize * j + i].position.copy( intersect.point).add(offset).add( intersect.face.normal );
@@ -835,40 +827,29 @@
                                    "," + (1 + (rollOverMeshes[0].position.y - 25) / guiMgr.cellWidth) +
                                    "," + (1 + (rollOverMeshes[0].position.z - 25) / guiMgr.cellWidth) +
                                    ")";
-				}
+                }
 
-				render();
+                render();
+            }
 
-			}
+            function onDocumentMouseDown( event ) {
+                event.preventDefault();
 
-			function onDocumentMouseDown( event ) {
+                mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+                raycaster.setFromCamera( mouse, camera );
+                var intersects = raycaster.intersectObjects( objects );
 
-				event.preventDefault();
+                if ( intersects.length > 0 ) {
+                    var intersect = intersects[ 0 ];
 
-				mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
-
-				raycaster.setFromCamera( mouse, camera );
-
-				var intersects = raycaster.intersectObjects( objects );
-
-				if ( intersects.length > 0 ) {
-
-					var intersect = intersects[ 0 ];
-
-					// delete cube
-
+                    // delete cube
                     if ( isShiftDown ) {
-
                         if ( intersect.object != plane ) {
                             scene.remove( intersect.object );
-
                             objects.splice( objects.indexOf( intersect.object ), 1 );
                         }
-
                     // create cube
-
                     } else {
-
                         // make one voxel for each brush element
                         for (var i = 0; i < rollOverMeshes.length; i++)
                         {
@@ -889,7 +870,7 @@
 
                             // store cell data for later export
                             voxel.userData.flag = guiMgr.BrushFlag;     // FLAG
-                            
+
                             // only store parameter data for flags that require it
                             switch (guiMgr.BrushFlag)
                             {
@@ -913,9 +894,7 @@
                     }
 
                     render();
-
                 }
-
             }
 
             function onDocumentDragOver ( event ) {
@@ -967,26 +946,20 @@
                         break;
                 }
                 render();
-
             }
 
-			function onDocumentKeyUp( event ) {
+            function onDocumentKeyUp( event ) {
+                switch ( event.keyCode ) {
+                    case 16: isShiftDown = false; break;
+                }
+            }
 
-				switch ( event.keyCode ) {
-
-					case 16: isShiftDown = false; break;
-
-				}
-
-			}
-
-			function render() {
-
-				renderer.render( scene, camera );
+            function render() {
+                renderer.render( scene, camera );
                 document.getElementById('position').innerHTML = positionText;
-			}
+            }
 
-		</script>
+        </script>
 
-	</body>
+    </body>
 </html>
