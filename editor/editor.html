@@ -636,7 +636,7 @@
 
             function getDomainCenter()
             {
-                return new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5, guiMgr.ylength * guiMgr.cellWidth * 0.5, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                return new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5 + 25, guiMgr.ylength * guiMgr.cellWidth * 0.5 + 25, guiMgr.zlength * guiMgr.cellWidth * 0.5 + 25);
             }
 
             function init() {
@@ -947,10 +947,10 @@
 
                     case 16: isShiftDown = true; break;
                     case 39:  // right arrow
-                        cameraParent.rotation.y += rotSpeed;
+                        cameraParent.rotation.y -= rotSpeed;
                         break;
                     case 37: // left arrow
-                        cameraParent.rotation.y -= rotSpeed;
+                        cameraParent.rotation.y += rotSpeed;
                         break;
                     case 38: // up arrow
                         cameraParent.rotation.x = Math.min( Math.PI / 2, cameraParent.rotation.x + rotSpeed);
