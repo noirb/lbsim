@@ -81,7 +81,20 @@
                 this.Zmax_p1 = 0.0; this.Zmax_p2 = 0.0; this.Zmax_p3 = 0.0;
 
                 this.cellWidth = 50;
+                this.halfCellWidth = this.cellWidth * 0.5;
                 this.export = function () { ExportData(); };
+            }
+
+            function updateAllUIValues(ui)
+            {
+                for (var i in ui.__controllers)
+                {
+                    ui.__controllers[i].updateDisplay();
+                }
+                for (var f in ui.__folders)
+                {
+                    updateAllUIValues(ui.__folders[f]);
+                }
             }
 
             var gui;
@@ -105,8 +118,6 @@
 
             var objects = [];
             var rollOverMeshes = [];
-            
-            var initDone = false;
 
             init();
             render();
@@ -137,11 +148,11 @@
                     if( child instanceof THREE.Mesh === false ) continue;
                     if( child.geometry instanceof THREE.BoxGeometry === false ) continue;
                     if( rollOverMeshes.indexOf(child) >= 0 ) continue;
-
+                    var vPos = coord2ind(child.position.x, child.position.y, child.position.z);
                     voxels.push({
-                        x     : 1 + (child.position.x - 25) / guiMgr.cellWidth,
-                        y     : 1 + (child.position.y - 25) / guiMgr.cellWidth,
-                        z     : 1 + (child.position.z - 25) / guiMgr.cellWidth,
+                        x     : vPos.x, //1 + (child.position.x - 25) / guiMgr.cellWidth,
+                        y     : vPos.y, //1 + (child.position.y - 25) / guiMgr.cellWidth,
+                        z     : vPos.z, //1 + (child.position.z - 25) / guiMgr.cellWidth,
                         f     : child.userData.flag,
                         parms : child.userData.parms
                     });
@@ -372,10 +383,9 @@
                         }
 
                         // create the voxel
-                        var voxPos = new THREE.Vector3( (cx-1) * guiMgr.cellWidth + 25, (cy-1) * guiMgr.cellWidth + 25, (cz-1) * guiMgr.cellWidth + 25);
+                        var voxPos = ind2coord(cx, cy, cz);
                         var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[cf] );
                         voxel.position.copy( voxPos );
-                        //voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
                         voxel.material.color.setHex(guiMgr.colors[cf]);
 
                         // store cell data for later export
@@ -447,18 +457,6 @@
                 updateAllUIValues(gui);
                 resizeDomain();
                 render();
-            }
-
-            function updateAllUIValues(ui)
-            {
-                for (var i in ui.__controllers)
-                {
-                    ui.__controllers[i].updateDisplay();
-                }
-                for (var f in ui.__folders)
-                {
-                    updateAllUIValues(ui.__folders[f]);
-                }
             }
 
             // changes brush size
@@ -541,14 +539,14 @@
                     {
                         for (var k = 0; k < guiMgr.zlength; k++)
                         {
-                            var v = new THREE.Vector3(i * guiMgr.cellWidth + 25, j * guiMgr.cellWidth + 25, k * guiMgr.cellWidth + 25);
+                            var v = ind2coord(i, j, k);
                             var sv = new THREE.Vector3(v.x, v.y, v.z);
                             sv.x *= 1.0 / xScale;
                             sv.y *= 1.0 / yScale;
                             sv.z *= 1.0 / zScale;
                             for (var o = 0; o < objects.length; o++)
                             {
-                                if (objects[o].position.distanceTo(sv) <= 25.0)
+                                if (objects[o].position.distanceTo(sv) <= guiMgr.halfCellWidth)
                                 {
                                     newPoints.push({ pos: v, dat: objects[o].userData});
                                     break;
@@ -575,16 +573,16 @@
                 {
                     var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[newPoints[i].dat.flag] );
                     voxel.position.copy( newPoints[i].pos );
-                    voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                    voxel.position.divideScalar( guiMgr.cellWidth ).floor().multiplyScalar( guiMgr.cellWidth ).addScalar( guiMgr.halfCellWidth );
                     voxel.userData = newPoints[i].dat;
                     voxel.material.color.setHex(guiMgr.colors[voxel.userData.flag]);
 
                     // don't actually add voxel if it's outside our domain
-                    if ((voxel.position.x - 25) / guiMgr.cellWidth >= guiMgr.xlength)
+                    if ((voxel.position.x - (guiMgr.halfCellWidth)) / guiMgr.cellWidth >= guiMgr.xlength)
                         continue;
-                    if ((voxel.position.y - 25) / guiMgr.cellWidth >= guiMgr.ylength)
+                    if ((voxel.position.y - (guiMgr.halfCellWidth)) / guiMgr.cellWidth >= guiMgr.ylength)
                         continue;
-                    if ((voxel.position.z - 25) / guiMgr.cellWidth >= guiMgr.zlength)
+                    if ((voxel.position.z - (guiMgr.halfCellWidth)) / guiMgr.cellWidth >= guiMgr.zlength)
                         continue;
                     if ((voxel.position.x < 0) || (voxel.position.y < 0) || (voxel.position.z < 0))
                         continue;
@@ -636,7 +634,29 @@
 
             function getDomainCenter()
             {
-                return new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5 + 25, guiMgr.ylength * guiMgr.cellWidth * 0.5 + 25, guiMgr.zlength * guiMgr.cellWidth * 0.5 + 25);
+                return new THREE.Vector3(guiMgr.xlength * guiMgr.cellWidth * 0.5 + guiMgr.halfCellWidth,
+                                         guiMgr.ylength * guiMgr.cellWidth * 0.5 + guiMgr.halfCellWidth,
+                                         guiMgr.zlength * guiMgr.cellWidth * 0.5 + guiMgr.halfCellWidth);
+            }
+
+            // converts an integer index (from .dat file) to world-space coordinates
+            function ind2coord(ix, iy, iz)
+            {
+                var result = new THREE.Vector3;
+                result.setX( (ix-1) * guiMgr.cellWidth + guiMgr.halfCellWidth );
+                result.setY( (iy-1) * guiMgr.cellWidth + guiMgr.halfCellWidth );
+                result.setZ( (iz-1) * guiMgr.cellWidth + guiMgr.halfCellWidth );
+                return result;
+            }
+
+            // converts world-space coordinates to integer indices (for export to .dat)
+            function coord2ind(x, y, z)
+            {
+                var result = {x: -1, y: -1, z: -1};
+                result.x = 1 + (x - guiMgr.halfCellWidth) / guiMgr.cellWidth;
+                result.y = 1 + (y - guiMgr.halfCellWidth) / guiMgr.cellWidth;
+                result.z = 1 + (z - guiMgr.halfCellWidth) / guiMgr.cellWidth;
+                return result;
             }
 
             function init() {
@@ -707,8 +727,11 @@
                 parmFolder.add(guiMgr, 'parm3').step(0.001);
                 gui.add(guiMgr, 'export');
 
-                container = document.getElementById('main'); //createElement( 'div' );
+                // END gui setup
 
+                container = document.getElementById('main');
+
+                // Help text (to display controls, etc)
                 var info = document.createElement( 'div' );
                 info.style.position = 'absolute';
                 info.style.top = '10px';
@@ -719,6 +742,7 @@
                 info.innerHTML += '<div id="position" style="font-weight:bold; color: #ff9;">(0,0,0)</div>';
                 container.appendChild( info );
 
+                // camera setup
                 cameraParent = new THREE.Object3D();
                 camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
                 camera.position.set( cameraDist, cameraDist, cameraDist );
@@ -726,10 +750,10 @@
                 cameraParent.add(camera);
                 updateCameraPos();
 
+                // scene setup
                 scene = new THREE.Scene();
-
                 scene.add(cameraParent);
-                cameraParent.position.set( guiMgr.xlength * guiMgr.cellWidth * 0.5, guiMgr.ylength * guiMgr.cellWidth * 0.5, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                cameraParent.position.set( guiMgr.xlength * guiMgr.halfCellWidth, guiMgr.ylength * guiMgr.halfCellWidth, guiMgr.zlength * guiMgr.halfCellWidth);
 
                 // roll-over helpers
                 rollOverGeo = new THREE.BoxGeometry( guiMgr.cellWidth, guiMgr.cellWidth, guiMgr.cellWidth );
@@ -754,10 +778,10 @@
                 // grid
                 grid = new THREE.Mesh( new THREE.PlaneGeometry( guiMgr.xlength*guiMgr.cellWidth, guiMgr.zlength*guiMgr.cellWidth, guiMgr.xlength, guiMgr.zlength ), new THREE.MeshBasicMaterial( { color: 0x0066aa, wireframe: true } ) );
                 grid.rotation.x = - 90 * Math.PI / 180;
-                grid.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                grid.position.set(guiMgr.xlength * guiMgr.halfCellWidth, 0, guiMgr.zlength * guiMgr.halfCellWidth);
                 scene.add( grid );
 
-
+                // raycaster & mouse are used for input tests
                 raycaster = new THREE.Raycaster();
                 mouse = new THREE.Vector2();
 
@@ -766,7 +790,7 @@
                 geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
                 plane = new THREE.Mesh( geometry );
                 plane.visible = false;
-                plane.position.set(guiMgr.xlength * guiMgr.cellWidth * 0.5, 0, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                plane.position.set(guiMgr.xlength * guiMgr.halfCellWidth, 0, guiMgr.zlength * guiMgr.halfCellWidth);
                 scene.add( plane );
                 objects.push( plane );
 
@@ -778,12 +802,14 @@
                 directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
                 scene.add( directionalLight );
 
+                // renderer setup
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
                 renderer.setClearColor( 0x202020 );
                 renderer.setPixelRatio( window.devicePixelRatio );
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 container.appendChild( renderer.domElement );
 
+                // input events
                 renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
                 renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
                 document.addEventListener( 'keydown', onDocumentKeyDown, false );
@@ -792,8 +818,6 @@
                 document.addEventListener( 'dragover', onDocumentDragOver, false);
 
                 window.addEventListener( 'resize', onWindowResize, false );
-
-                initDone = true;
             }
 
             function onWindowResize() {
@@ -829,24 +853,22 @@
                                 switch (guiMgr.brushOrientation)
                                 {
                                     case 'XZ':
-                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * k, guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize / 2.0));
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize * 0.5), guiMgr.cellWidth * k, guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize * 0.5));
                                         break;
                                     case 'XY':
-                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize / 2.0), guiMgr.cellWidth * j, guiMgr.cellWidth * (0.5 + k - guiMgr.brushWidth / 2.0));
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + i - guiMgr.brushSize * 0.5), guiMgr.cellWidth * j, guiMgr.cellWidth * (0.5 + k - guiMgr.brushWidth * 0.5));
                                         break;
                                     case 'YZ':
-                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + k - guiMgr.brushWidth / 2.0), guiMgr.cellWidth * i, guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize / 2.0));
+                                        offset = new THREE.Vector3(guiMgr.cellWidth * (0.5 + k - guiMgr.brushWidth * 0.5), guiMgr.cellWidth * i, guiMgr.cellWidth * (0.5 + j - guiMgr.brushSize * 0.5));
                                         break;
                                 }
                                 rollOverMeshes[guiMgr.brushSize*guiMgr.brushSize * k + guiMgr.brushSize * j + i].position.copy( intersect.point).add(offset).add( intersect.face.normal );
-                                rollOverMeshes[guiMgr.brushSize*guiMgr.brushSize * k + guiMgr.brushSize * j + i].position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                                rollOverMeshes[guiMgr.brushSize*guiMgr.brushSize * k + guiMgr.brushSize * j + i].position.divideScalar( guiMgr.cellWidth ).floor().multiplyScalar( guiMgr.cellWidth ).addScalar( guiMgr.halfCellWidth );
                             }
                         }
                     }
-                    positionText = "(" + (1 + (rollOverMeshes[0].position.x - 25) / guiMgr.cellWidth) +
-                                   "," + (1 + (rollOverMeshes[0].position.y - 25) / guiMgr.cellWidth) +
-                                   "," + (1 + (rollOverMeshes[0].position.z - 25) / guiMgr.cellWidth) +
-                                   ")";
+                    var p = coord2ind(rollOverMeshes[0].position.x, rollOverMeshes[0].position.y, rollOverMeshes[0].position.z);
+                    positionText = "(" + p.x + ", " + p.y + ", " + p.z + ")";
                 }
 
                 render();
@@ -880,15 +902,15 @@
                         {
                             var voxel = new THREE.Mesh( cubeGeo, guiMgr.materials[guiMgr.BrushFlag] );
                             voxel.position.copy( rollOverMeshes[i].position );
-                            voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+                            voxel.position.divideScalar( guiMgr.cellWidth ).floor().multiplyScalar( guiMgr.cellWidth ).addScalar( guiMgr.halfCellWidth );
                             voxel.material.color.setHex(guiMgr.colors[guiMgr.BrushFlag]);
 
                             // don't actually add voxel if it's outside our domain
-                            if ((voxel.position.x - 25) / guiMgr.cellWidth >= guiMgr.xlength)
+                            if ((voxel.position.x - guiMgr.halfCellWidth) / guiMgr.cellWidth >= guiMgr.xlength)
                                 continue;
-                            if ((voxel.position.y - 25) / guiMgr.cellWidth >= guiMgr.ylength)
+                            if ((voxel.position.y - guiMgr.halfCellWidth) / guiMgr.cellWidth >= guiMgr.ylength)
                                 continue;
-                            if ((voxel.position.z - 25) / guiMgr.cellWidth >= guiMgr.zlength)
+                            if ((voxel.position.z - guiMgr.halfCellWidth) / guiMgr.cellWidth >= guiMgr.zlength)
                                 continue;
                             if ((voxel.position.x < 0) || (voxel.position.y < 0) || (voxel.position.z < 0))
                                 continue;
@@ -979,7 +1001,6 @@
                         camera.updateProjectionMatrix();
                         break;
                 }
-                //updateCameraPos();
                 render();
             }
 
@@ -991,7 +1012,7 @@
 
             function updateCameraPos()
             {
-                cameraParent.position.set( guiMgr.xlength * guiMgr.cellWidth * 0.5, guiMgr.ylength * guiMgr.cellWidth * 0.5, guiMgr.zlength * guiMgr.cellWidth * 0.5);
+                cameraParent.position.set( guiMgr.xlength * guiMgr.halfCellWidth, guiMgr.ylength * guiMgr.halfCellWidth, guiMgr.zlength * guiMgr.halfCellWidth);
             }
 
             function render() {
