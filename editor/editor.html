@@ -498,6 +498,10 @@
             // resizes the grid when xlength, ylength, or zlength changes
             function resizeDomain()
             {
+                if (guiMgr.xlength < 1) { guiMgr.xlength = 1; updateAllUIValues(gui); }
+                if (guiMgr.ylength < 1) { guiMgr.ylength = 1; updateAllUIValues(gui); }
+                if (guiMgr.zlength < 1) { guiMgr.zlength = 1; updateAllUIValues(gui); }
+
                 scene.remove(grid);
                 scene.remove(plane);
 
@@ -524,9 +528,9 @@
                 var scaleMat = new THREE.Matrix4();
                 scaleMat.makeScale(xScale, yScale, zScale);
                 scaleMat.getInverse(scaleMat);
-                guiMgr.xlength *= xScale;
-                guiMgr.ylength *= yScale;
-                guiMgr.zlength *= zScale;
+                guiMgr.xlength = Math.max(Math.round(guiMgr.xlength * xScale), 1);
+                guiMgr.ylength = Math.max(Math.round(guiMgr.ylength * yScale), 1);
+                guiMgr.zlength = Math.max(Math.round(guiMgr.zlength * zScale), 1);
 
                 resizeDomain();
                 updateAllUIValues(gui);
@@ -614,22 +618,32 @@
             function rescaleX()
             {
                 var scaleFactor = window.prompt("Scale X by percentage:", "100");
-                scaleFactor = parseFloat(scaleFactor) / 100.0;
-                rescaleDomain(scaleFactor, 1.0, 1.0);
+                if (scaleFactor) // ensure user entered a value
+                {
+                    scaleFactor = parseFloat(scaleFactor) / 100.0;
+                    rescaleDomain(scaleFactor, 1.0, 1.0);
+
+                }
             }
 
             function rescaleY()
             {
                 var scaleFactor = window.prompt("Scale Y by percentage:", "100");
-                scaleFactor = parseFloat(scaleFactor) / 100.0;
-                rescaleDomain(1.0, scaleFactor, 1.0);
+                if (scaleFactor) // ensure user entered a value
+                {
+                    scaleFactor = parseFloat(scaleFactor) / 100.0;
+                    rescaleDomain(1.0, scaleFactor, 1.0);
+                }
             }
 
             function rescaleZ()
             {
                 var scaleFactor =    window.prompt("Scale Z by percentage:", "100");
-                scaleFactor = parseFloat(scaleFactor) / 100.0;
-                rescaleDomain(1.0, 1.0, scaleFactor);
+                if (scaleFactor) // ensure user entered a value
+                {
+                    scaleFactor = parseFloat(scaleFactor) / 100.0;
+                    rescaleDomain(1.0, 1.0, scaleFactor);
+                }
             }
 
             function getDomainCenter()
