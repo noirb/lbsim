@@ -498,7 +498,6 @@
                             cx == "0" || cy == "0" || cz == "0" ||
                             cx == guiMgr.xlength || cy == guiMgr.ylength || cz == guiMgr.zlength)
                         {
-                            console.log("Doing wall: " + lines[i]);
                             var wallstr = (cx + cy + cz).toUpperCase();
                             switch (wallstr)
                             {
@@ -670,9 +669,7 @@
             function parseParameterExpression(paramString)
             {
                 var paramRegex = /\#\+ (\S+): (.+)/g;
-                console.log(paramString);
                 var expr = paramRegex.exec(paramString);
-                console.log(expr);
                 switch(expr[1])
                 {
                     case "xmin_parm1" : guiMgr.Xmin_p1 = expr[2]; break;
