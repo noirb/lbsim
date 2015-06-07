@@ -183,6 +183,10 @@
                 }
                 else
                 {
+                    expData += "# X Min wall parameterized with expressions\n";
+                    expData += "#+ xmin_parm1: " + guiMgr.Xmin_p1 + "\n";
+                    expData += "#+ xmin_parm2: " + guiMgr.Xmin_p2 + "\n";
+                    expData += "#+ xmin_parm3: " + guiMgr.Xmin_p3 + "\n";
                     var x = 0;
                     for (var y = 0; y < guiMgr.ylength; y++)
                     {
@@ -219,6 +223,10 @@
                 }
                 else
                 {
+                    expData += "# X Max wall parameterized with expressions\n";
+                    expData += "#+ xmax_parm1: " + guiMgr.Xmax_p1 + "\n";
+                    expData += "#+ xmax_parm2: " + guiMgr.Xmax_p2 + "\n";
+                    expData += "#+ xmax_parm3: " + guiMgr.Xmax_p3 + "\n";
                     var x = guiMgr.xlength;
                     for (var y = 0; y < guiMgr.ylength; y++)
                     {
@@ -255,6 +263,10 @@
                 }
                 else
                 {
+                    expData += "# Y Min wall parameterized with expressions\n";
+                    expData += "#+ ymin_parm1: " + guiMgr.Ymin_p1 + "\n";
+                    expData += "#+ ymin_parm2: " + guiMgr.Ymin_p2 + "\n";
+                    expData += "#+ ymin_parm3: " + guiMgr.Ymin_p3 + "\n";
                     var y = 0;
                     for (var x = 0; x < guiMgr.xlength; x++)
                     {
@@ -291,6 +303,10 @@
                 }
                 else
                 {
+                    expData += "# Y Max wall parameterized with expressions\n";
+                    expData += "#+ ymax_parm1: " + guiMgr.Ymax_p1 + "\n";
+                    expData += "#+ ymax_parm2: " + guiMgr.Ymax_p2 + "\n";
+                    expData += "#+ ymax_parm3: " + guiMgr.Ymax_p3 + "\n";
                     var y = guiMgr.ylength;
                     for (var x = 0; x < guiMgr.xlength; x++)
                     {
@@ -327,6 +343,10 @@
                 }
                 else
                 {
+                    expData += "# Z Min wall parameterized with expressions\n";
+                    expData += "#+ zmin_parm1: " + guiMgr.Zmin_p1 + "\n";
+                    expData += "#+ zmin_parm2: " + guiMgr.Zmin_p2 + "\n";
+                    expData += "#+ zmin_parm3: " + guiMgr.Zmin_p3 + "\n";
                     var z = 0;
                     for (var x = 0; x < guiMgr.xlength; x++)
                     {
@@ -363,6 +383,10 @@
                 }
                 else
                 {
+                    expData += "# Z Max wall parameterized with expressions\n";
+                    expData += "#+ zmax_parm1: " + guiMgr.Zmax_p1 + "\n";
+                    expData += "#+ zmax_parm2: " + guiMgr.Zmax_p2 + "\n";
+                    expData += "#+ zmax_parm3: " + guiMgr.Zmax_p3 + "\n";
                     var z = guiMgr.zlength;
                     for (var x = 0; x < guiMgr.xlength; x++)
                     {
@@ -425,7 +449,7 @@
             {
                 var cell_regex = /\((\*|[nN]|[0-9]+) +(\*|[nN]|[0-9]+) +(\*|[nN]|[0-9]+)\) +([A-Z]+_*[A-Z]*) *(\((-?[0-9]+\.[0-9]+|-?[0-9]+) *(-?[0-9]+\.[0-9]+|-?[0-9]+)? *(-?[0-9]+\.[0-9]+|-?[0-9]+)?\))?/;
                 var lines = data.split("\n");
-
+                var minx_expr = false; var maxx_expr = false; var miny_expr = false; var maxy_expr = false; var minz_expr = false; var maxz_expr = false;
                 // empty scene of any existing voxels
                 var children = objects; //scene.children;
                 for( var i = children.length; i >= 0; --i ) {
@@ -461,25 +485,27 @@
                             px = matches[6];
                             py = matches[7];
                             pz = matches[8];
-                            console.log("Found: [" + cx + ", " + cy + ", " + cz + "] : " + cf + " <" + px + ", " + py + ", " + pz + ">");
+                            //console.log("Found: [" + cx + ", " + cy + ", " + cz + "] : " + cf + " <" + px + ", " + py + ", " + pz + ">");
                         }
                         else
                         {
-                            console.log("Found: [" + cx + ", " + cy + ", " + cz + "] : " + cf);
+                            //console.log("Found: [" + cx + ", " + cy + ", " + cz + "] : " + cf);
                         }
 
                         // deal with borders & wildcards                                /// TODO : CLEAN THIS MESS UP
                         if (cx == "*" || cy == "*" || cz == "*" ||
                             cx.toUpperCase() == "N" || cy.toUpperCase() == "N" || cz.toUpperCase() == "N" ||
-                            cx == "0" || cy == "0" || cz == "0")
+                            cx == "0" || cy == "0" || cz == "0" ||
+                            cx == guiMgr.xlength || cy == guiMgr.ylength || cz == guiMgr.zlength)
                         {
                             console.log("Doing wall: " + lines[i]);
                             var wallstr = (cx + cy + cz).toUpperCase();
                             switch (wallstr)
                             {
                                 case "**0": // minz
-                                    guiMgr.Zmin_Constant = true;
+                                    guiMgr.Zmin_Constant = true; 
                                     guiMgr.Zmin = cf;
+                                    if (minz_expr) { break; } // don't load this cell's values as parameters if we have an expression
                                     if (px) { guiMgr.Zmin_p1 = parseFloat(px); }
                                     if (py) { guiMgr.Zmin_p2 = parseFloat(py); }
                                     if (pz) { guiMgr.Zmin_p3 = parseFloat(pz); }
@@ -487,6 +513,7 @@
                                 case "*0*": // miny
                                     guiMgr.Ymin_Constant = true;
                                     guiMgr.Ymin = cf;
+                                    if (miny_expr) { break; } // don't load this cell's values as parameters if we have an expression
                                     if (px) { guiMgr.Ymin_p1 = parseFloat(px); }
                                     if (py) { guiMgr.Ymin_p2 = parseFloat(py); }
                                     if (pz) { guiMgr.Ymin_p3 = parseFloat(pz); }
@@ -494,6 +521,7 @@
                                 case "0**": // minx
                                     guiMgr.Xmin_Constant = true;
                                     guiMgr.Xmin = cf;
+                                    if (minx_expr) { break; } // don't load this cell's values as parameters if we have an expression
                                     if (px) { guiMgr.Xmin_p1 = parseFloat(px); }
                                     if (py) { guiMgr.Xmin_p2 = parseFloat(py); }
                                     if (pz) { guiMgr.Xmin_p3 = parseFloat(pz); }
@@ -501,6 +529,7 @@
                                 case "**N": // maxz
                                     guiMgr.Zmax_Constant = true;
                                     guiMgr.Zmax = cf;
+                                    if (maxz_expr) { break; } // don't load this cell's values as parameters if we have an expression
                                     if (px) { guiMgr.Zmax_p1 = parseFloat(px); }
                                     if (py) { guiMgr.Zmax_p2 = parseFloat(py); }
                                     if (pz) { guiMgr.Zmax_p3 = parseFloat(pz); }
@@ -508,6 +537,7 @@
                                 case "*N*": // maxy
                                     guiMgr.Ymax_Constant = true;
                                     guiMgr.Ymax = cf;
+                                    if (maxy_expr) { break; } // don't load this cell's values as parameters if we have an expression
                                     if (px) { guiMgr.Ymax_p1 = parseFloat(px); }
                                     if (py) { guiMgr.Ymax_p2 = parseFloat(py); }
                                     if (pz) { guiMgr.Ymax_p3 = parseFloat(pz); }
@@ -515,9 +545,42 @@
                                 case "N**": // maxx
                                     guiMgr.Xmax_Constant = true;
                                     guiMgr.Xmax = cf;
+                                    if (maxx_expr) { break; } // don't load this cell's values as parameters if we have an expression
                                     if (px) { guiMgr.Xmax_p1 = parseFloat(px); }
                                     if (py) { guiMgr.Xmax_p2 = parseFloat(py); }
                                     if (pz) { guiMgr.Xmax_p3 = parseFloat(pz); }
+                                    break;
+                                default: // not a wild card, just a cell on a wall
+                                    if (cx == 0)
+                                    {
+                                        guiMgr.Xmin_Constant = false;
+                                        guiMgr.Xmin = cf;
+                                    }
+                                    else if (cy == 0)
+                                    {
+                                        guiMgr.Ymin_Constant = false;
+                                        guiMgr.Ymin = cf;
+                                    }
+                                    else if (cz == 0)
+                                    {
+                                        guiMgr.Zmin_Constant = false;
+                                        guiMgr.Zmin = cf;
+                                    }
+                                    else if (cx == guiMgr.xlength)
+                                    {
+                                        guiMgr.Xmax_Constant = false;
+                                        guiMgr.Xmax = cf;
+                                    }
+                                    else if (cy == guiMgr.ylength)
+                                    {
+                                        guiMgr.Ymax_Constant = false;
+                                        guiMgr.Ymax = cf;
+                                    }
+                                    else if (cz == guiMgr.zlength)
+                                    {
+                                        guiMgr.Zmax_Constant = false;
+                                        guiMgr.Zmax = cf;
+                                    }
                                     break;
                             }
                             continue;
@@ -566,6 +629,10 @@
                             {
                                 guiMgr.name = ls[1];
                             }
+                            else if (ls[0] == "#+") // found a paramater expression
+                            {
+                                parseParameterExpression(lines[i]);
+                            }
                             else if (ls[0] == "xlength")
                             {
                                 guiMgr.xlength = parseInt(ls[1]);
@@ -598,6 +665,40 @@
                 updateAllUIValues(gui);
                 resizeDomain();
                 render();
+            }
+
+            function parseParameterExpression(paramString)
+            {
+                var paramRegex = /\#\+ (\S+): (.+)/g;
+                console.log(paramString);
+                var expr = paramRegex.exec(paramString);
+                console.log(expr);
+                switch(expr[1])
+                {
+                    case "xmin_parm1" : guiMgr.Xmin_p1 = expr[2]; break;
+                    case "xmin_parm2" : guiMgr.Xmin_p2 = expr[2]; break;
+                    case "xmin_parm3" : guiMgr.Xmin_p3 = expr[2]; break;
+
+                    case "xmax_parm1" : guiMgr.Xmax_p1 = expr[2]; break;
+                    case "xmax_parm2" : guiMgr.Xmax_p2 = expr[2]; break;
+                    case "xmax_parm3" : guiMgr.Xmax_p3 = expr[2]; break;
+
+                    case "ymin_parm1" : guiMgr.Ymin_p1 = expr[2]; break;
+                    case "ymin_parm2" : guiMgr.Ymin_p2 = expr[2]; break;
+                    case "ymin_parm3" : guiMgr.Ymin_p3 = expr[2]; break;
+
+                    case "ymax_parm1" : guiMgr.Ymax_p1 = expr[2]; break;
+                    case "ymax_parm2" : guiMgr.Ymax_p2 = expr[2]; break;
+                    case "ymax_parm3" : guiMgr.Ymax_p3 = expr[2]; break;
+
+                    case "zmin_parm1" : guiMgr.Zmin_p1 = expr[2]; break;
+                    case "zmin_parm2" : guiMgr.Zmin_p2 = expr[2]; break;
+                    case "zmin_parm3" : guiMgr.Zmin_p3 = expr[2]; break;
+
+                    case "zmax_parm1" : guiMgr.Zmax_p1 = expr[2]; break;
+                    case "zmax_parm2" : guiMgr.Zmax_p2 = expr[2]; break;
+                    case "zmax_parm3" : guiMgr.Zmax_p3 = expr[2]; break;
+                }
             }
 
             // changes brush size
