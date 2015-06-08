@@ -992,7 +992,7 @@
                 info.style.width = '100%';
                 info.style.textAlign = 'center';
                 info.style.color = '#afb';
-                info.innerHTML  = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel<br /><strong>Arrow Keys</strong>: rotate camera, <strong>WSAD:</strong> pan camera, <strong>Q,E:</strong> zoom in/out<br />';
+                info.innerHTML  = '<strong>click</strong>: add voxel, <strong>shift + click</strong>: remove voxel<br /><strong>Arrow Keys</strong>: rotate camera, <strong>WSAD:</strong> pan camera, <strong>Q,E:</strong> move up/down<br />';
                 info.innerHTML += '<div id="position" style="font-weight:bold; color: #ff9;">(0,0,0)</div>';
                 container.appendChild( info );
 
@@ -1219,23 +1219,23 @@
                 var rotSpeed = 0.1;
                 var movSpeed = 100;
                 var cameraDir = new THREE.Vector3(0, 0, -1);
-                cameraDir.applyQuaternion(camera.quaternion).normalize();
+                cameraDir.applyQuaternion(camera.quaternion).setY(0).normalize();
                 var cameraRight = new THREE.Vector3(1, 0, 0);
                 cameraRight.applyQuaternion(camera.quaternion).normalize();
                 switch( event.keyCode ) {
 
                     case 16: isShiftDown = true; break;
                     case 39:  // right arrow
-                        cameraParent.rotation.y -= rotSpeed;
+                        rotateAroundWorldAxis(cameraParent, new THREE.Vector3(0, 1, 0), rotSpeed);
                         break;
                     case 37: // left arrow
-                        cameraParent.rotation.y += rotSpeed;
+                        rotateAroundWorldAxis(cameraParent, new THREE.Vector3(0, 1, 0), -rotSpeed);
                         break;
                     case 38: // up arrow
-                        cameraParent.rotation.x = Math.min( Math.PI / 2, cameraParent.rotation.x + rotSpeed);
+                        cameraParent.rotateOnAxis(cameraRight, -rotSpeed);
                         break;
                     case 40: // down arrow
-                        cameraParent.rotation.x = Math.max( -Math.PI / 2, cameraParent.rotation.x - rotSpeed);
+                        cameraParent.rotateOnAxis(cameraRight, rotSpeed);
                         break;
                     case 87: // W
                         cameraParent.translateOnAxis(cameraDir, movSpeed);
@@ -1250,12 +1250,14 @@
                         cameraParent.translateOnAxis(cameraRight, movSpeed);
                         break;
                     case 81: // Q
-                        camera.fov *= 1.05;
-                        camera.updateProjectionMatrix();
+                        camera.translateOnAxis(new THREE.Vector3(0, 1, 0), -movSpeed);
+                        //camera.fov *= 1.05;
+                        //camera.updateProjectionMatrix();
                         break;
                     case 69: // E
-                        camera.fov *= 0.95;
-                        camera.updateProjectionMatrix();
+                        camera.translateOnAxis(new THREE.Vector3(0, 1, 0), movSpeed);
+                        //camera.fov *= 0.95;
+                        //camera.updateProjectionMatrix();
                         break;
                 }
                 render();
@@ -1277,6 +1279,13 @@
                 document.getElementById('position').innerHTML = positionText;
             }
 
+            function rotateAroundWorldAxis( object, axis, radians ) {
+                var rotationMatrix = new THREE.Matrix4();
+                rotationMatrix.makeRotationAxis( axis.normalize(), radians );
+                rotationMatrix.multiply( object.matrix );                       // pre-multiply
+                object.matrix = rotationMatrix;
+                object.rotation.setFromRotationMatrix( object.matrix );
+            }
         </script>
 
     </body>
