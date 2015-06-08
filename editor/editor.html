@@ -1218,7 +1218,10 @@
             function onDocumentKeyDown( event ) {
                 var rotSpeed = 0.1;
                 var movSpeed = 100;
-
+                var cameraDir = new THREE.Vector3(0, 0, -1);
+                cameraDir.applyQuaternion(camera.quaternion).normalize();
+                var cameraRight = new THREE.Vector3(1, 0, 0);
+                cameraRight.applyQuaternion(camera.quaternion).normalize();
                 switch( event.keyCode ) {
 
                     case 16: isShiftDown = true; break;
@@ -1235,16 +1238,16 @@
                         cameraParent.rotation.x = Math.max( -Math.PI / 2, cameraParent.rotation.x - rotSpeed);
                         break;
                     case 87: // W
-                        cameraParent.position.z += movSpeed;
+                        cameraParent.translateOnAxis(cameraDir, movSpeed);
                         break;
                     case 83: // S
-                        cameraParent.position.z -= movSpeed;
+                        cameraParent.translateOnAxis(cameraDir, -movSpeed);
                         break;
                     case 65: // A
-                        cameraParent.position.x += movSpeed;
+                        cameraParent.translateOnAxis(cameraRight, -movSpeed);
                         break;
                     case 68: // D
-                        cameraParent.position.x -= movSpeed;
+                        cameraParent.translateOnAxis(cameraRight, movSpeed);
                         break;
                     case 81: // Q
                         camera.fov *= 1.05;
