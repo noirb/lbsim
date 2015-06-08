@@ -135,7 +135,7 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
                                     computeDensity(collideField+ind, &den);
                                     computeVelocity(&(collideField[ind]), &den, velocity_ref);
                                     computeFeq(&(flagField[FINDEXOF(i, j, k)].parms[0]), velocity_ref, feq_inlet);
-                                    collideField[INDEXOF(i, j, k, l)] = feq_inlet[l];
+                                    collideField[INDEXOF(i, j, k, l)] = feq_inlet[18 - l] + feq_inlet[l] - FINV(i, j, k, l);
                                     break;
                             }
                         }
