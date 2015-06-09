@@ -1216,8 +1216,8 @@
             }
 
             function onDocumentKeyDown( event ) {
-                var rotSpeed = 0.1;
-                var movSpeed = 100;
+                var rotSpeed = 0.05;
+                var movSpeed = 25;
                 var cameraDir = new THREE.Vector3(0, 0, -1);
                 cameraDir.applyQuaternion(camera.quaternion).setY(0).normalize();
                 var cameraRight = new THREE.Vector3(1, 0, 0);
