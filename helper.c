@@ -6,6 +6,7 @@
 /* ----------------------------------------------------------------------- */
 /*                             auxiliary functions                         */
 /* ----------------------------------------------------------------------- */
+#ifndef _WIN32
 int min( int a, int b)
 {
     if( a < b ) return a;
@@ -29,7 +30,7 @@ double fmax( double a, double b)
     if( a > b ) return a;
     return b;
 }
-
+#endif
 
 /* ----------------------------------------------------------------------- */
 /*                         local auxiliary functions                       */
@@ -58,16 +59,30 @@ void errhandler( int nLine, const char *szFile, const char *szString )
 
     /* if an error within the c-library occured, an error code can be   */
     /* found in the global variable err                                 */
-    if( err != 0 )
+    if (err != 0)
     {
-        fprintf( ERROUT, "C-Lib   errno    = %d\n", err);
-        fprintf( ERROUT, "C-Lib   strerror = %s\n", strerror( err ) );
+        fprintf(ERROUT, "C-Lib   errno    = %d\n", err);
+#ifndef _WIN32 // strerror is deprecated on Windows
+        fprintf(ERROUT, "C-Lib   strerror = %s\n", strerror(err));
+#else
+        char err_buf[80];
+
+        if (!strerror_s(err_buf, 80, err))
+        {
+            fprintf(ERROUT, "C-Lib   strerror = %s\n", err_buf);
+        }
+        else
+        {
+            fprintf(ERROUT, "C-Lib   strerror failed; errno = %d\n", err);
+        }
+#endif
     }
     exit(1);
 }
 
 
 /*  for comfort */
+#ifndef _WIN32 // sprintf is replaced in favor of sprintf_s on Windows
 #define READ_ERROR(szMessage, szVarName, szFileName, nLine) \
   { char szTmp[80]; \
     if( nLine ) \
@@ -76,6 +91,16 @@ void errhandler( int nLine, const char *szFile, const char *szString )
         sprintf( szTmp, " %s  File: %s   Variable: %s ", szMessage, szFileName, szVarName); \
     ERROR( szTmp ); \
   }
+#else
+#define READ_ERROR(szMessage, szVarName, szFileName, nLine) \
+  { char szTmp[80]; \
+    if( nLine ) \
+        sprintf_s( szTmp, 80, " %s  File: %s   Variable: %s  Line: %d", szMessage, szFileName, szVarName, nLine ); \
+    else \
+        sprintf_s( szTmp, 80, " %s  File: %s   Variable: %s ", szMessage, szFileName, szVarName); \
+    ERROR( szTmp ); \
+  }
+#endif
 
 
 /* --------------------------------------------------------------------------*/
@@ -101,9 +126,14 @@ char* find_string( const char* szFileName, const char *szVarName )
     char* szName = NULL;
 
     /* open file */
+#ifndef _WIN32 // fopen is deprecated on Windows
     fh = fopen( szFileName, "rt" );
-    if( fh == 0 )
+    if (fh == 0)
         READ_ERROR("Could not open file", szVarName, szFileName, 0);
+#else
+    if (fopen_s(&fh, szFileName, "rt") != 0) // fopen_s returns 0 on success
+        READ_ERROR("Could not open file", szVarName, szFileName, 0);
+#endif
 
     /* searching */
     while( ! feof(fh) )
@@ -165,8 +195,13 @@ void read_string( const char* szFileName, const char* szVarName, char*   pVariab
     else
         szValue = find_string( szFileName, szVarName );
 
+#ifndef _WIN32 // sscanf is deprecated in favor of sscanf_s on Windows
     if( sscanf( szValue, "%s", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName,0);
+#else
+    if (sscanf_s(szValue, "%s", pVariable) == 0)
+        READ_ERROR("wrong format", szVarName, szFileName, 0);
+#endif
 
     printf( "File: %s\t\t%s%s= %s\n", szFileName,
                                       szVarName,
@@ -187,8 +222,13 @@ void read_int( const char* szFileName, const char* szVarName, int* pVariable)
     else
         szValue = find_string( szFileName, szVarName );
 
+#ifndef _WIN32 // sscanf is deprecated in favor of sscanf_s on Windows
     if( sscanf( szValue, "%d", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName, 0);
+#else
+    if (sscanf_s(szValue, "%d", pVariable) == 0)
+        READ_ERROR("wrong format", szVarName, szFileName, 0);
+#endif
 
     printf( "File: %s\t\t%s%s= %d\n", szFileName,
                                       szVarName,
@@ -209,8 +249,13 @@ void read_double( const char* szFileName, const char* szVarName, double* pVariab
     else
         szValue = find_string( szFileName, szVarName );
 
+#ifndef _WIN32 // sscanf is deprecated in favor of sscanf_s on Windows
     if( sscanf( szValue, "%lf", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName, 0);
+#else
+    if (sscanf_s(szValue, "%lf", pVariable) == 0)
+        READ_ERROR("wrong format", szVarName, szFileName, 0);
+#endif
 
     printf( "File: %s\t\t%s%s= %f\n", szFileName,
                                       szVarName,
@@ -243,6 +288,7 @@ void write_matrix( const char* szFileName,     /* filename */
 
    if( fFirst )                         /* first call of the function ? */
    {
+#ifndef _WIN32 // fopen is deprecated in favor of fopen_s on Windows
        fh = fopen( szFileName, "w");    /* overwrite file/write new file */
        if( fh == NULL )                 /* opening failed ? */
        {
@@ -250,18 +296,37 @@ void write_matrix( const char* szFileName,     /* filename */
            sprintf( szBuff, "Outputfile %s cannot be created", szFileName );
            ERROR( szBuff );
        }
+#else
+       errno_t err = fopen_s( &fh, szFileName, "w" );
+       if ( err != 0 )
+       {
+           char szBuff[80];
+           sprintf_s( szBuff, 80, "Outputfile %s cannot be created. Error code: %d", szFileName, err );
+           ERROR( szBuff );
+       }
+#endif
 
 /*       fprintf( fh,"%f\n%f\n%d\n%d\n%d\n%d\n", xlength, ylength, nrl, nrh, ncl, nch ); */
    }
    else
    {
-       fh = fopen( szFileName ,"a");    /* append to the file */
+#ifndef _WIN32 // fopen is deprecated in favor of fopen_s on Windows
+       fh = fopen( szFileName ,"a" );    /* append to the file */
        if( fh == NULL )                 /* opening failed ? */
        {
            char szBuff[80];
            sprintf( szBuff, "Outputfile %s cannot be opened", szFileName );
            ERROR( szBuff );
        }
+#else
+       errno_t err = fopen_s( &fh, szFileName, "a" );    /* append to the file */
+       if ( err != 0 )                                 /* opening failed ? */
+       {
+           char szBuff[80];
+           sprintf_s( szBuff, 80, "Outputfile %s cannot be opened. Error code: %d", szFileName, err );
+           ERROR( szBuff );
+       }
+#endif
    }
 
    for( j = ncl; j <= nch; j++)
@@ -273,7 +338,11 @@ void write_matrix( const char* szFileName,     /* filename */
    if( fclose(fh) )
    {
        char szBuff[80];
+#ifndef _WIN32 // sprintf is deprecated in favor of sprintf_s on Windows
        sprintf( szBuff, "Outputfile %s cannot be closed", szFileName );
+#else
+       sprintf_s( szBuff, 80, "Outputfile %s cannot be closed", szFileName );
+#endif
        ERROR( szBuff );
    };
 
@@ -295,6 +364,7 @@ void read_matrix( const char* szFileName,     /* filename */
    float *tmp = (float *)malloc( (size_t)(nSize) * sizeof(float));
    int k = 0;
 
+#ifndef _WIN32 // fopen is deprecated in favor of fopen_s on Windows
        fh = fopen( szFileName, "r");    /* overwrite file/write new file */
        if( fh == NULL )                 /* opening failed ? */
        {
@@ -302,6 +372,15 @@ void read_matrix( const char* szFileName,     /* filename */
            sprintf( szBuff, "Can not read file %s !!!", szFileName );
            ERROR( szBuff );
        }
+#else
+   errno_t err = fopen_s( &fh, szFileName, "r" );    /* overwrite file/write new file */
+   if ( err != 0 )                         /* opening failed ? */
+   {
+       char szBuff[80];
+       sprintf_s( szBuff, 80, "Can not read file %s !!! Error: %d", szFileName, err );
+       ERROR( szBuff );
+   }
+#endif
 
 
    if(fread( tmp, sizeof(float), (size_t)nSize, fh));
@@ -313,9 +392,11 @@ void read_matrix( const char* szFileName,     /* filename */
    if( fclose(fh) )
    {
        char szBuff[80];
-       /*orig bug:
-       sscanf( szBuff, "Inputfile %s cannot be closed", szFileName );*/
+#ifndef _WIN32 // sprintf is deprecated in favor of sprintf_s on Windows
        sprintf( szBuff, "Inputfile %s cannot be closed", szFileName );
+#else
+       sprintf_s( szBuff, 80, "Inputfile %s cannot be closed", szFileName );
+#endif;
        ERROR( szBuff );
    };
 
@@ -431,13 +512,22 @@ int **read_pgm(const char *filename)
     int i1, j1;
     int **pic = NULL;
 
-
-    if ((input=fopen(filename,"rb"))==0)
+#ifndef _WIN32 // fopen is deprecated in favor of fopen_s on Windows
+    if ( (input=fopen(filename,"rb")) == 0 )
     {
        char szBuff[80];
            sprintf( szBuff, "Can not read file %s !!!", filename );
            ERROR( szBuff );
     }
+#else
+    errno_t err = fopen_s( &input, filename, "rb" );
+    if (err != 0)
+    {
+        char szBuff[80];
+        sprintf_s( szBuff, 80, "Can not read file %s !!! Error: %d", filename, err );
+        ERROR( szBuff );
+    }
+#endif
 
     /* check for the right "magic number" */
     if ( fread(line,1,3,input)!=3 )
@@ -452,13 +542,21 @@ int **read_pgm(const char *filename)
     while(*line=='#');
 
     /* read the width and height */
+#ifndef _WIN32 // sscanf is deprecated in favor of sscanf_s on Windows
     sscanf(line,"%d %d\n",&xsize,&ysize);
+#else
+    sscanf_s(line, "%d %d\n", &xsize, &ysize);
+#endif
 
     printf("Image size: %d x %d\n", xsize,ysize);
 
     /* read # of gray levels */
     if(fgets(line,sizeof line,input));
+#ifndef _WIN32 // sscanf is deprecated in favor of sscanf_s on Windows
     sscanf(line,"%d\n",&levels);
+#else
+    sscanf_s(line, "%d\n", &levels);
+#endif
 
     /* allocate memory for image */
     pic = imatrix(0,xsize+2,0,ysize+2);
@@ -470,7 +568,11 @@ int **read_pgm(const char *filename)
         for (i1=1; i1 < xsize+1; i1++)
         {
             int byte;
+#ifndef _WIN32 // fscanf is deprecated in favor of fscanf_s on Windows
             if(fscanf(input, "%d", &byte));
+#else
+            if (fscanf_s(input, "%d", &byte));
+#endif
 
             if (byte==EOF)
             {

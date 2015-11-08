@@ -111,6 +111,9 @@ void treatBoundary(double *collideField, flag_data* flagField, int xlength, int 
                                                 sources = mirrorsrc_08;
                                                 mirrors = mirrormap_08;
                                                 break;
+                                            default:
+                                                sources = mirrorsrc_08;
+                                                mirrors = mirrormap_08;
                                         }
 
                                         for (int mirror = 0; mirror < nMirrorDirs; mirror++)

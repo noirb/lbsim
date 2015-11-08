@@ -7,16 +7,31 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   int i,j,k;
   char szFileName[80];
   FILE *fp=NULL;
+#ifndef _WIN32 // sprintf is deprecated in favor of sprintf_s on Windows
   sprintf( szFileName, "%s.%i.vtk", filename, t );
-  fp = fopen( szFileName, "w");
+  fp = fopen(szFileName, "w");
 
-  if( fp == NULL )
+  if (fp == NULL)
   {
-    char szBuff[80];
-    sprintf( szBuff, "Failed to open %s", szFileName );
-    ERROR( szBuff );
-    return;
+      char szBuff[80];
+      sprintf(szBuff, "Failed to open %s", szFileName);
+      ERROR(szBuff);
+      return;
   }
+#else
+  sprintf_s(szFileName, 80, "%s.%i.vtk", filename, t);
+  errno_t err = fopen_s( &fp, szFileName, "w" );
+
+  if ( err != 0 )
+  {
+      char szBuff[80];
+      sprintf_s(szBuff, "Failed to open %s", szFileName);
+      ERROR(szBuff);
+      return;
+  }
+#endif
+
+
 
   // allocate space to store densities so we don't recompute them 
   // when computing the velocity
@@ -70,7 +85,11 @@ void writeVtkOutput(const double * const collideField, const flag_data * const f
   if( fclose(fp) )
   {
     char szBuff[80];
+#ifndef _WIN32 // sprintf is deprecated in favor of sprintf_s on Windows
     sprintf( szBuff, "Failed to close %s", szFileName );
+#else
+    sprintf_s( szBuff, 80, "Failed to close %s", szFileName );
+#endif
     ERROR( szBuff );
   }
 }
@@ -81,7 +100,11 @@ void write_vtkHeader( FILE *fp, int xlength, int ylength, int zlength)
   if( fp == NULL )
   {
     char szBuff[80];
+#ifndef _WIN32 // sprintf is deprecated in favor of sprintf_s on Windows
     sprintf( szBuff, "Null pointer in write_vtkHeader" );
+#else
+    sprintf_s( szBuff, 80, "Null pointer in write_vtkHeader" );
+#endif
     ERROR( szBuff );
     return;
   }

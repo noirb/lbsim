@@ -11,6 +11,25 @@ typedef enum {
     VARY_Z = 0x4
     } vary_flags;
 
+#ifdef _WIN32 // we build as C++ on Windows, so need this to use vary_flags in bitwise operations
+inline vary_flags operator|(vary_flags a, vary_flags b)
+{
+    return static_cast<vary_flags>(static_cast<int>(a) | static_cast<int>(b));
+}
+inline vary_flags operator|=(vary_flags a, vary_flags b)
+{
+    return static_cast<vary_flags>(static_cast<int>(a) | static_cast<int>(b));
+}
+inline vary_flags operator&(vary_flags a, vary_flags b)
+{
+    return static_cast<vary_flags>(static_cast<int>(a) & static_cast<int>(b));
+}
+inline vary_flags operator&=(vary_flags a, vary_flags b)
+{
+    return static_cast<vary_flags>(static_cast<int>(a) & static_cast<int>(b));
+}
+#endif
+
 /* reads the parameters for the lid driven cavity scenario from a config file */
 int readParameters(
     int *xlength,                       /* reads domain's x-dimension. Parameter name: "xlength" */

@@ -1,6 +1,10 @@
 #ifndef _MAIN_C_
 #define _MAIN_C_
 
+#ifdef _WIN32
+#define NOMINMAX
+#endif
+
 #include "collision.h"
 #include "streaming.h"
 #include "initLB.h"
