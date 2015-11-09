@@ -6,7 +6,6 @@
 /* ----------------------------------------------------------------------- */
 /*                             auxiliary functions                         */
 /* ----------------------------------------------------------------------- */
-#ifndef _WIN32
 int min( int a, int b)
 {
     if( a < b ) return a;
@@ -30,7 +29,6 @@ double fmax( double a, double b)
     if( a > b ) return a;
     return b;
 }
-#endif
 
 /* ----------------------------------------------------------------------- */
 /*                         local auxiliary functions                       */

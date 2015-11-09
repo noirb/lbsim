@@ -26,12 +26,10 @@
  */
 extern clock_t last_timer_reset;
 
-#ifndef _WIN32
 int min( int a, int b);
 int max( int a, int b);
 double fmin( double a, double b);
 double fmax( double a, double b);
-#endif
 
 /**
  * Error handling:
