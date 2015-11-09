@@ -16,17 +16,17 @@ inline vary_flags operator|(vary_flags a, vary_flags b)
 {
     return static_cast<vary_flags>(static_cast<int>(a) | static_cast<int>(b));
 }
-inline vary_flags operator|=(vary_flags a, vary_flags b)
+inline vary_flags& operator|=(vary_flags& a, vary_flags b)
 {
-    return static_cast<vary_flags>(static_cast<int>(a) | static_cast<int>(b));
+    return a = a | b;
 }
 inline vary_flags operator&(vary_flags a, vary_flags b)
 {
     return static_cast<vary_flags>(static_cast<int>(a) & static_cast<int>(b));
 }
-inline vary_flags operator&=(vary_flags a, vary_flags b)
+inline vary_flags& operator&=(vary_flags& a, vary_flags b)
 {
-    return static_cast<vary_flags>(static_cast<int>(a) & static_cast<int>(b));
+    return a = a & b;
 }
 #endif
 
