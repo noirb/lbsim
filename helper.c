@@ -394,7 +394,7 @@ void read_matrix( const char* szFileName,     /* filename */
        sprintf( szBuff, "Inputfile %s cannot be closed", szFileName );
 #else
        sprintf_s( szBuff, 80, "Inputfile %s cannot be closed", szFileName );
-#endif;
+#endif
        ERROR( szBuff );
    };
 
