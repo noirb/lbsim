@@ -197,7 +197,7 @@ void read_string( const char* szFileName, const char* szVarName, char*   pVariab
     if( sscanf( szValue, "%s", pVariable) == 0)
         READ_ERROR("wrong format", szVarName, szFileName,0);
 #else
-    if (sscanf_s(szValue, "%s", pVariable) == 0)
+    if (sscanf_s(szValue, "%s", pVariable, 80) == 0)
         READ_ERROR("wrong format", szVarName, szFileName, 0);
 #endif
 

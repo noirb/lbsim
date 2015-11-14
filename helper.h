@@ -39,6 +39,9 @@ double fmax( double a, double b);
  * Example:
  * ERROR("File not found !");
  */
+#ifdef ERROR
+#undef ERROR
+#endif
 #define ERROR(s)    errhandler( __LINE__, __FILE__, s)
 
 /**
@@ -65,7 +68,7 @@ void  errhandler( int nLine, const char *szFile, const char *szString );
 /**
  * Reading from a datafile.
  *
- * The foloowing three macros help reading values from the parameter file.
+ * The following three macros help reading values from the parameter file.
  * If a variable cannot be found, the program stops with an error message.
  *
  * Example:
@@ -77,7 +80,7 @@ void  errhandler( int nLine, const char *szFile, const char *szString );
 /**
  * Reading from a datafile.
  *
- * The foloowing three macros help reading values from the parameter file.
+ * The following three macros help reading values from the parameter file.
  * If a variable cannot be found, the program stops with an error message.
  *
  * Example:
@@ -89,7 +92,7 @@ void  errhandler( int nLine, const char *szFile, const char *szString );
 /**
  * Reading from a datafile.
  *
- * The foloowing three macros help reading values from the parameter file.
+ * The following three macros help reading values from the parameter file.
  * If a variable cannot be found, the program stops with an error message.
  *
  * Example:
