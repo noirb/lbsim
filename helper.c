@@ -18,6 +18,7 @@ int max( int a, int b)
     return b;
 }
 
+#ifndef _WIN32 // fmin & fmax are defined using doubles in <math.h> in C++
 double fmin( double a, double b)
 {
     if( a < b ) return a;
@@ -29,6 +30,7 @@ double fmax( double a, double b)
     if( a > b ) return a;
     return b;
 }
+#endif
 
 /* ----------------------------------------------------------------------- */
 /*                         local auxiliary functions                       */

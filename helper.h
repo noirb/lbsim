@@ -28,8 +28,10 @@ extern clock_t last_timer_reset;
 
 int min( int a, int b);
 int max( int a, int b);
+#ifndef _WIN32 // fmin & fmax are defined for doubles in <math.h> in C++
 double fmin( double a, double b);
 double fmax( double a, double b);
+#endif
 
 /**
  * Error handling:
